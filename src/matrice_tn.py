@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, decimals=2, threshold=1e-10):
+def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, decimals=2, threshold=1e-7):
     """
     valeur unique qi
     valeur unique ai-1
@@ -31,16 +31,16 @@ def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, decimals=2, threshold=1e-10):
     matrix_res[3, 2] = 0
     matrix_res[3, 3] = 1
 
-    # Redondear los valores a 'decimals' dígitos
+    # Arrondissement
     matrix_res = np.round(matrix_res, decimals)
 
-    # Reemplazar valores pequeños (por debajo de 'threshold') por 0
+    #Si tres petit = 0
     matrix_res[np.abs(matrix_res) < threshold] = 0
 
     return matrix_res
 
 
-def matrice_Tn(qi, alphai_moins1, ri, ai_moins1, decimals=2, threshold=1e-3):
+def matrice_Tn(qi, alphai_moins1, ri, ai_moins1, decimals=2, threshold=1e-7):
     """
     qi: liste des qi
     alphai-1 liste des alpha
@@ -59,10 +59,10 @@ def matrice_Tn(qi, alphai_moins1, ri, ai_moins1, decimals=2, threshold=1e-3):
     for mat in mat_list:
         result_matrix = np.dot(result_matrix, mat)
 
-    # Redondear los valores a 'decimals' dígitos
+    # Arrondissement
     result_matrix = np.round(result_matrix, decimals)
 
-    # Reemplazar valores pequeños (por debajo de 'threshold') por 0
+    #Si tres petit = 0
     result_matrix[np.abs(result_matrix) < threshold] = 0
 
     return result_matrix
