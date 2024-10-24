@@ -48,6 +48,7 @@ def matrice_Tn(qi, alphai_moins1, ri, ai_moins1, decimals=2, threshold=1e-3):
     ai-1 liste
     return matrice T0,n correspondante avec les éléments arrondis.
     """
+<<<<<<< HEAD
     nbliaison = len(qi)
     mat_list = []
     for i in range(nbliaison):
@@ -77,3 +78,29 @@ def xy_Ot(qi, L):
 
 
 
+=======
+
+
+    nbliaison=len(qi)
+    mat_list=[]
+    for i in range (nbliaison):
+        mat_temp=matrice_Tim1_Ti(qi[i],ai_moins1[i],alphai_moins1[i],ri[i])
+        mat_list.append(mat_temp) 
+    result_matrix = np.eye(4)
+    for mat in mat_list:
+        result_matrix = np.dot(result_matrix,mat)
+    
+    return result_matrix
+
+
+def xy_Ot(qi,L):
+    """qi list
+        longueur list"""
+    
+    x=L[0]*np.cos(qi[0]) + L[1]*np.cos(qi[0]+qi[1]) + L[2]*np.cos(qi[0]+qi[1]+qi[2])
+    y=L[0]*np.sin(qi[0]) + L[1]*np.sin(qi[0]+qi[1]) + L[2]*np.sin(qi[0]+qi[1]+qi[2])
+    return x,y
+    
+   
+ 
+>>>>>>> 319975e397d9aa9b4a37ca114d824bb449eb2492
