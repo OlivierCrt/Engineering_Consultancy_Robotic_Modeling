@@ -2,6 +2,13 @@ import numpy as np
 
 
 def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri):
+    """
+    valeur unique qi
+    valeur unique ai-1
+    valeur unique alphai-1
+    valeur unique ri
+    return matrice Ti-1,i
+    """
     matrix_res = np.zeros((4, 4))
 
     matrix_res[0, 0] = np.cos(qi)
@@ -34,6 +41,7 @@ def matrice_Tn(qi,alphai_moins1,ri,ai_moins1) :
     alphai-1 liste des alpha
     ri liste des r
     ai-1 liste
+    return matrice T0,n correspondante
     """
     nbliaison=len(qi)
     mat_list=[]
@@ -43,12 +51,11 @@ def matrice_Tn(qi,alphai_moins1,ri,ai_moins1) :
     result_matrix = np.eye(4)
     for mat in mat_list:
         result_matrix = np.dot(result_matrix, mat)
+    
     return result_matrix
+
+
+
+    
    
-
-
-
-
-        
-
-    return 
+ 
