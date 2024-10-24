@@ -50,5 +50,5 @@ Trajectory simulation in the generalized space is carried out at each sampling i
 
 1. Clone this project:
    ```bash
-   git clone https://github.com/your-repository/robot-trajectories.git
-   cd robot-trajectories
+   git clone https://github.com/OlivierCrt/Engineering_Consultancy_Robotic_Modeling/tree/main
+
