@@ -3,7 +3,7 @@ setup.py
 Tests/__init__.py
 Tests/test_xy_ot.py
 src/__init__.py
-src/denvit_hartenberg.py
+src/matrice_tn.py
 src.egg-info/PKG-INFO
 src.egg-info/SOURCES.txt
 src.egg-info/dependency_links.txt
