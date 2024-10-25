@@ -16,8 +16,10 @@ print("Transformation T(0,3):")
 matrice_T0Tn = matrice_Tn(dh, round_m=round_p)
 print(matrice_T0Tn)
 
-# Extraction des coordonnées (x, y, z) de la transformation finale
-xyz = xy_Ot(matrice_T0Tn)
-print("\nCoordonnées finales (x, y, z):")
-print(xyz)
-print(H(xyz,Xd,rayon_max_p=rayon_max1_5))
+#Pour ce TP Z0 représente l'axe vertical et Y0 celui de la profondeur
+print("\nCoordonnées finales grace a matrice T(0,n) en fonction de X0,Y0,Z0:\n",xy_Ot(matrice_T0Tn))
+# print(H(xyz,Xd,rayon_max_p=rayon_max1_5))
+
+print("\nCoordonnées (x, y, z) en mm en fonction des angles de la liste q et X0, Y0, Z0:")
+mgd(q,Lxz,p1)
+

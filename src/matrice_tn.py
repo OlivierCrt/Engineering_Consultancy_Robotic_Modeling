@@ -69,33 +69,46 @@ def matrice_Tn(dh, round_m=()):
 
     return result_matrix
 
+#MGD avec q liste d'angles, L liste de longueurs
+def mgd(q, Lxz, p1):
+    rayon_max = 1600
+    lz1 = Lxz[0]
+    lz2 = Lxz[1]
+    lz3 = Lxz[2]
+    q=np.radians(q) #Passage a Radians pour utiliser les formules trigo
+
+    teta = (np.pi/2)-np.arctan(3 / 11)
+    teta1 = q[0]
+    teta2 = q[1]
+    teta3 = q[2]
+
+    x = lz1 * np.cos(teta) + lz2 * np.cos(teta + teta2) + lz3 * np.cos(teta + teta2 + teta3)
+    x = round(x, 2)
+    z = lz1 * np.sin(teta) + lz2 * np.sin(teta + teta2) + lz3 * np.sin(teta + teta2 + teta3)
+    z = round(z, 2)
+
+    h=lz1*np.cos(teta)+lz2+lz3
+    alpha=np.arcsin(p1/h)
+    y = (x / np.cos(teta1)) * np.sin(teta1+alpha)
+    y = round(y, 2)
+
+    Xd = np.array([x, y, z])
+    ray=round(np.sqrt(x ** 2 + y ** 2 + z ** 2),2)
+
+    if ray <= rayon_max and z >= 0+5:
+        return print("Valeurs de q correctes, coordonnés finales (x,y,z): \n",Xd)
+    else:
+        return print("Valeurs de q incorrectes, dépasement du rayon de 1600 mm (rayon actuel= ",ray, "mm) ou valeur de z négative, coordonnés finales (x,y,z): \n",Xd)
+
+
+
+#Fonction qui donne les coordonnées obtenus d'une matrice T(0,n)
 def xy_Ot(result_matrix):
     return (result_matrix[:3,-1])
 
-
-
-
-
-
-
-
-"""def xy_Ot(qi, L):
-    qi list
-        longueur list
-
-    x = L[0] * np.cos(qi[0]) + L[1] * np.cos(qi[0] + qi[1]) + L[2] * np.cos(qi[0] + qi[1] + qi[2])
-    y = L[0] * np.sin(qi[0]) + L[1] * np.sin(qi[0] + qi[1]) + L[2] * np.sin(qi[0] + qi[1] + qi[2])
-    return x, y"""
-
-def H(xyOt,Xd,rayon_max_p):
-    """xyOt coo calculé avec mgd
-        Xd coo demandé"""
-    
-    if np.sqrt(Xd[0]**2+Xd[1]**2+Xd[2]**2) <= rayon_max_p and Xd[1] >=0:
-
-        return np.linalg.norm((Xd-xyOt))
-    print("Parametre probleme on ne peut pas atteindre Xd\n")
-
-    return None
-    
-
+#Matrice pour definir le critére d'erreur
+def H(Xd, q):
+    X_actuel = mgd(q)
+    erreur = Xd - X_actuel
+    C = 0.5 * np.linalg.norm(erreur)**2
+    return C, erreur
