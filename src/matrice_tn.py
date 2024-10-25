@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.optimize import minimize
 
 
 def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, round_m=()):
@@ -31,6 +30,7 @@ def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, round_m=()):
     matrix_res[3, 1] = 0
     matrix_res[3, 2] = 0
     matrix_res[3, 3] = 1
+
     if round_m :
         # Arrondissement
         matrix_res = np.round(matrix_res, round_m[0])
@@ -60,12 +60,6 @@ def matrice_Tn(dh, round_m=()):
     for mat in mat_list:
         result_matrix = np.dot(result_matrix, mat)
 
-    # Arrondissement
-    if round_m :
-        result_matrix = np.round(result_matrix, round_m[0])
-
-        #Si tres petit = 0
-        result_matrix[np.abs(result_matrix) < round_m[1]] = 0
 
     return result_matrix
 
