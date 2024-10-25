@@ -31,12 +31,6 @@ def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, round_m=()):
     matrix_res[3, 2] = 0
     matrix_res[3, 3] = 1
 
-    if round_m :
-        # Arrondissement
-        matrix_res = np.round(matrix_res, round_m[0])
-
-        #Si tres petit = 0
-        matrix_res[np.abs(matrix_res) < round_m[1]] = 0
 
     return matrix_res
 
