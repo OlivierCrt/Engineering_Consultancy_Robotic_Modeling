@@ -18,7 +18,7 @@ for i in range(len(dh['sigma_i'])):
 
 
 # Calcul de la transformation complète T(0,3)
-print(f"Transformation T(0,{len(dh['sigma_i'])}):\n")
+print(f"Transformation T(0,{len(dh['sigma_i'])}) :\n")
 matrice_T0Tn = matrice_Tn(dh)
 print(f"{matrice_T0Tn}\n")
 if round_p:

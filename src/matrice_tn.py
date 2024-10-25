@@ -93,4 +93,4 @@ def fonction_cout(qi, Xe, dh):
     # Mettre à jour les paramètres DH avec les angles qi
     dh["sigma_i"] = qi  # Ajuste les valeurs d'angles avec les `qi` donnés en entrée
     X_calculé = matrice_Tn(dh)[:3, -1]  # Obtient les coordonnées finales avec le MGD et les `qi`
-    return np.linalg.norm(Xe - X_calculé)  # Retourne l'écart par rapport à Xe
+    return np.linalg.norm(Xe - X_calculé)  # Retourne l'écart par rapport à Xe.
