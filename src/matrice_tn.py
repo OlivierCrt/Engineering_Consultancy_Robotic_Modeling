@@ -1,9 +1,9 @@
 import numpy as np
 
 
-def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, round_m=()):
+def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri):
     """
-    valeur unique qi
+    Valeur unique qi
     valeur unique ai-1
     valeur unique alphai-1
     valeur unique ri
@@ -32,10 +32,11 @@ def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, round_m=()):
     matrix_res[3, 3] = 1
 
 
+
     return matrix_res
 
 #mgd
-def matrice_Tn(dh, round_m=()):
+def matrice_Tn(dh):
     """
     qi: liste des qi
     alphai-1 liste des alpha
@@ -47,7 +48,7 @@ def matrice_Tn(dh, round_m=()):
     nbliaison = len(dh["sigma_i"])
     mat_list = []
     for i in range(nbliaison):
-        mat_temp = matrice_Tim1_Ti(dh["sigma_i"][i], dh["a_i_m1"][i], dh["alpha_i_m1"][i], dh["r_i"][i], round_m=round_m)
+        mat_temp = matrice_Tim1_Ti(dh["sigma_i"][i], dh["a_i_m1"][i], dh["alpha_i_m1"][i], dh["r_i"][i])
         mat_list.append(mat_temp)
 
     result_matrix = np.eye(4)
@@ -87,3 +88,9 @@ def H(xyOt,Xd,rayon_max_p):
     return None
     
 
+# Fonction de coût qui utilise le MGD et retourne l'erreur par rapport à Xe
+def fonction_cout(qi, Xe, dh):
+    # Mettre à jour les paramètres DH avec les angles qi
+    dh["sigma_i"] = qi  # Ajuste les valeurs d'angles avec les `qi` donnés en entrée
+    X_calculé = matrice_Tn(dh)[:3, -1]  # Obtient les coordonnées finales avec le MGD et les `qi`
+    return np.linalg.norm(Xe - X_calculé)  # Retourne l'écart par rapport à Xe
