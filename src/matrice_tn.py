@@ -41,7 +41,7 @@ def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, round_m=()):
     return matrix_res
 
 #mgd
-def matrice_Tn(qi, alphai_moins1, ri, ai_moins1, round_m=()):
+def matrice_Tn(dh, round_m=()):
     """
     qi: liste des qi
     alphai-1 liste des alpha
@@ -50,10 +50,10 @@ def matrice_Tn(qi, alphai_moins1, ri, ai_moins1, round_m=()):
     round tuple : (decimals,threshold)
     return matrice T0,n correspondante avec les éléments arrondis.
     """
-    nbliaison = len(qi)
+    nbliaison = len(dh["sigma_i"])
     mat_list = []
     for i in range(nbliaison):
-        mat_temp = matrice_Tim1_Ti(qi[i], ai_moins1[i], alphai_moins1[i], ri[i])
+        mat_temp = matrice_Tim1_Ti(dh["sigma_i"][i], dh["a_i_m1"][i], dh["alpha_i_m1"][i], dh["r_i"][i], round_m=round_m)
         mat_list.append(mat_temp)
 
     result_matrix = np.eye(4)
