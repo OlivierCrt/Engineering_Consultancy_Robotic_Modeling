@@ -1,10 +1,9 @@
 import numpy as np
-from scipy.optimize import minimize
 
 
-def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, round_m=()):
+def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri):
     """
-    valeur unique qi
+    Valeur unique qi
     valeur unique ai-1
     valeur unique alphai-1
     valeur unique ri
@@ -31,17 +30,13 @@ def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, round_m=()):
     matrix_res[3, 1] = 0
     matrix_res[3, 2] = 0
     matrix_res[3, 3] = 1
-    if round_m :
-        # Arrondissement
-        matrix_res = np.round(matrix_res, round_m[0])
 
-        #Si tres petit = 0
-        matrix_res[np.abs(matrix_res) < round_m[1]] = 0
+
 
     return matrix_res
 
 #mgd
-def matrice_Tn(dh, round_m=()):
+def matrice_Tn(dh):
     """
     qi: liste des qi
     alphai-1 liste des alpha
@@ -53,19 +48,13 @@ def matrice_Tn(dh, round_m=()):
     nbliaison = len(dh["sigma_i"])
     mat_list = []
     for i in range(nbliaison):
-        mat_temp = matrice_Tim1_Ti(dh["sigma_i"][i], dh["a_i_m1"][i], dh["alpha_i_m1"][i], dh["r_i"][i], round_m=round_m)
+        mat_temp = matrice_Tim1_Ti(dh["sigma_i"][i], dh["a_i_m1"][i], dh["alpha_i_m1"][i], dh["r_i"][i])
         mat_list.append(mat_temp)
 
     result_matrix = np.eye(4)
     for mat in mat_list:
         result_matrix = np.dot(result_matrix, mat)
 
-    # Arrondissement
-    if round_m :
-        result_matrix = np.round(result_matrix, round_m[0])
-
-        #Si tres petit = 0
-        result_matrix[np.abs(result_matrix) < round_m[1]] = 0
 
     return result_matrix
 
@@ -106,9 +95,45 @@ def mgd(q, Lxz, p1):
 def xy_Ot(result_matrix):
     return (result_matrix[:3,-1])
 
+<<<<<<< HEAD
 #Matrice pour definir le critére d'erreur
 def H(Xd, q):
     X_actuel = mgd(q)
     erreur = Xd - X_actuel
     C = 0.5 * np.linalg.norm(erreur)**2
     return C, erreur
+=======
+
+
+
+
+
+
+
+"""def xy_Ot(qi, L):
+    qi list
+        longueur list
+
+    x = L[0] * np.cos(qi[0]) + L[1] * np.cos(qi[0] + qi[1]) + L[2] * np.cos(qi[0] + qi[1] + qi[2])
+    y = L[0] * np.sin(qi[0]) + L[1] * np.sin(qi[0] + qi[1]) + L[2] * np.sin(qi[0] + qi[1] + qi[2])
+    return x, y"""
+
+def H(xyOt,Xd,rayon_max_p):
+    """xyOt coo calculé avec mgd
+        Xd coo demandé"""
+    
+    if np.sqrt(Xd[0]**2+Xd[1]**2+Xd[2]**2) <= rayon_max_p and Xd[1] >=0:
+
+        return np.linalg.norm((Xd-xyOt))
+    print("Parametre probleme on ne peut pas atteindre Xd\n")
+
+    return None
+    
+
+# Fonction de coût qui utilise le MGD et retourne l'erreur par rapport à Xe
+def fonction_cout(qi, Xe, dh):
+    # Mettre à jour les paramètres DH avec les angles qi
+    dh["sigma_i"] = qi  # Ajuste les valeurs d'angles avec les `qi` donnés en entrée
+    X_calculé = matrice_Tn(dh)[:3, -1]  # Obtient les coordonnées finales avec le MGD et les `qi`
+    return np.linalg.norm(Xe - X_calculé)  # Retourne l'écart par rapport à Xe.
+>>>>>>> 13c1d1190e9ed5115afa0eb9d45586132473a481
