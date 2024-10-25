@@ -1,7 +1,8 @@
 import numpy as np
+from scipy.optimize import minimize
 
 
-def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, decimals=2, threshold=1e-7):
+def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, round_m=()):
     """
     valeur unique qi
     valeur unique ai-1
@@ -30,25 +31,25 @@ def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, decimals=2, threshold=1e-7):
     matrix_res[3, 1] = 0
     matrix_res[3, 2] = 0
     matrix_res[3, 3] = 1
+    if round_m :
+        # Arrondissement
+        matrix_res = np.round(matrix_res, round_m[0])
 
-    # Arrondissement
-    matrix_res = np.round(matrix_res, decimals)
-
-    #Si tres petit = 0
-    matrix_res[np.abs(matrix_res) < threshold] = 0
+        #Si tres petit = 0
+        matrix_res[np.abs(matrix_res) < round_m[1]] = 0
 
     return matrix_res
 
-
-def matrice_Tn(qi, alphai_moins1, ri, ai_moins1, decimals=2, threshold=1e-7):
+#mgd
+def matrice_Tn(qi, alphai_moins1, ri, ai_moins1, round_m=()):
     """
     qi: liste des qi
     alphai-1 liste des alpha
     ri liste des r
     ai-1 liste
+    round tuple : (decimals,threshold)
     return matrice T0,n correspondante avec les éléments arrondis.
     """
-<<<<<<< HEAD
     nbliaison = len(qi)
     mat_list = []
     for i in range(nbliaison):
@@ -60,47 +61,41 @@ def matrice_Tn(qi, alphai_moins1, ri, ai_moins1, decimals=2, threshold=1e-7):
         result_matrix = np.dot(result_matrix, mat)
 
     # Arrondissement
-    result_matrix = np.round(result_matrix, decimals)
+    if round_m :
+        result_matrix = np.round(result_matrix, round_m[0])
 
-    #Si tres petit = 0
-    result_matrix[np.abs(result_matrix) < threshold] = 0
+        #Si tres petit = 0
+        result_matrix[np.abs(result_matrix) < round_m[1]] = 0
 
     return result_matrix
 
+def xy_Ot(result_matrix):
+    return (result_matrix[:3,-1])
 
-def xy_Ot(qi, L):
-    """qi list
-        longueur list"""
+
+
+
+
+
+
+
+"""def xy_Ot(qi, L):
+    qi list
+        longueur list
 
     x = L[0] * np.cos(qi[0]) + L[1] * np.cos(qi[0] + qi[1]) + L[2] * np.cos(qi[0] + qi[1] + qi[2])
     y = L[0] * np.sin(qi[0]) + L[1] * np.sin(qi[0] + qi[1]) + L[2] * np.sin(qi[0] + qi[1] + qi[2])
-    return x, y
+    return x, y"""
 
-
-
-=======
-
-
-    nbliaison=len(qi)
-    mat_list=[]
-    for i in range (nbliaison):
-        mat_temp=matrice_Tim1_Ti(qi[i],ai_moins1[i],alphai_moins1[i],ri[i])
-        mat_list.append(mat_temp) 
-    result_matrix = np.eye(4)
-    for mat in mat_list:
-        result_matrix = np.dot(result_matrix,mat)
+def H(xyOt,Xd,rayon_max_p):
+    """xyOt coo calculé avec mgd
+        Xd coo demandé"""
     
-    return result_matrix
+    if np.sqrt(Xd[0]**2+Xd[1]**2+Xd[2]**2) <= rayon_max_p and Xd[1] >=0:
 
+        return np.linalg.norm((Xd-xyOt))
+    print("Parametre probleme on ne peut pas atteindre Xd\n")
 
-def xy_Ot(qi,L):
-    """qi list
-        longueur list"""
+    return None
     
-    x=L[0]*np.cos(qi[0]) + L[1]*np.cos(qi[0]+qi[1]) + L[2]*np.cos(qi[0]+qi[1]+qi[2])
-    y=L[0]*np.sin(qi[0]) + L[1]*np.sin(qi[0]+qi[1]) + L[2]*np.sin(qi[0]+qi[1]+qi[2])
-    return x,y
-    
-   
- 
->>>>>>> 319975e397d9aa9b4a37ca114d824bb449eb2492
+
