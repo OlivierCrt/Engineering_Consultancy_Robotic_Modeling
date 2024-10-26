@@ -23,11 +23,14 @@ Lxz=[l1,l2,l3]
 #Param de profondeur
 p1=dh["r_i"][2]
 
+#Inclinaison horizontale de l1
+inclin_horiz=(np.pi/2)-np.arctan(dh["a_i_m1"][1]/ dh["r_i"][0])
+
 #Angles des liaisons en Degrés
 q = [0,-20,-120]
+rayon_max1_5=1600#en mm
 
-# rayon_max1_5=1600#en mm
-# Xd = [700, 200, 500]
-
-
-
+#Pour le MGI
+Xd = [800, 0, 400]
+#q_initial=[0,-90,0]
+Nb_iter=10000
