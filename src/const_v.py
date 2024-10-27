@@ -24,13 +24,21 @@ Lxz=[l1,l2,l3]
 p1=dh["r_i"][2]
 
 #Inclinaison horizontale de l1
-inclin_horiz=(np.pi/2)-np.arctan(dh["a_i_m1"][1]/ dh["r_i"][0])
+inclin_horiz=(np.pi/2)-np.arctan(dh["r_i"][0]/dh["a_i_m1"][1])
 
 #Angles des liaisons en Degrés
-q = [0,-20,-120]
+q = [45,40,-90]
 rayon_max1_5=1600#en mm
 
 #Pour le MGI
 Xd = [800, 0, 400]
 #q_initial=[0,-90,0]
 Nb_iter=10000
+
+#Pour modélisation 3D du bras robot
+Liaisons = {}
+"""Dans les listes on a les parametres horizontaux, verticaux et de profondeur, dans cette ordre"""
+Liaisons["Liaison 1"] = [150, 550, 0]
+Liaisons["Liaison 2"] = [825, 0, 348.5]
+Liaisons["Liaison 3"] = [735, 0, 352]
+

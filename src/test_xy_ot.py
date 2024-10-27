@@ -45,7 +45,6 @@ else:
 # Tester plusieurs valeurs du pas
 valeurs_pas = [1.5, 2, 2.5, 3,4,5]
 q_initial=q
-print("Configuracion initiale calculée:", q_initial)
 resultats = evaluer_plusieurs_pas(Xd, q_initial, Lxz, p1, inclin_horiz, valeurs_pas, Nb_iter)
 # Courbe(resultats, "Évolution de l'erreur en fonction du pas", "Itération", "Erreur")
 
@@ -57,14 +56,14 @@ q_final, historique_erreur = mgi(Xd, q_initial, Lxz, p1, inclin_horiz, Nb_iter)
 
 q_final_deg = normal_angle(np.degrees(q_final))
 error_final = historique_erreur[-1]
-print("Coordonnées con souhaite atteindre:", Xd)
-print("Configuration finale des articulations:", q_final_deg)
+print("\nExecution du MGI (METHODE CLASSIQUE)\nCoordonnées con souhaite atteindre:", Xd)
+print("Solution pour les angles qi:", q_final_deg)
 print("Avec une erreur finale de:", error_final)
 print("Verification de ces angles avec la fonction MGD:", mgd(q_final, Lxz, p1, inclin_horiz))
 
 
 # Execution du MGI (METHODE OPTIMIZE)
-Xe = np.array([700, 200, 500])
+Xe = Xd
 
 # Valeurs initiales pour qi (exemple)
 qi_initiale = [0, 0, 0]  # À ajuster en fonction du robot
@@ -78,8 +77,9 @@ result = minimize(fonction_cout, x0=qi_initiale, args=(Xe, dh), bounds=bounds)
 # Résultats
 if result.success:
     qi_solution = result.x
-    print("\nCoordonnées con souhaite atteindre:", Xe)
+    print("\nExecution du MGI (METHODE OPTIMIZE)\nCoordonnées con souhaite atteindre:", Xe)
     print("Solution pour les angles qi :", qi_solution)
     print("Verification de ces angles avec la fonction MGD:", mgd(qi_solution, Lxz, p1, inclin_horiz))
 else:
     print("La solution n'a pas convergé.")
+
