@@ -1,6 +1,7 @@
 import plotly.graph_objects as go
 from const_v import *
 
+"""FONTION POUR MODELISER EN 3D LE BRAS ROBOT, LA FONCTION EST DECLARE A LA TOUTE FIN"""
 def bras_rob_model3D(Liaisons,q):
     q_rad = np.radians(q)
 
@@ -8,43 +9,42 @@ def bras_rob_model3D(Liaisons,q):
     L2=Liaisons["Liaison 2"]
     L3=Liaisons["Liaison 3"]
 
-    # Angles
-    teta = inclin_horiz
-    teta1 = q_rad[0]
-    teta2 = q_rad[1]
-    teta3 = q_rad[2]
-
     Liaisons["Liaison 1"] = [150, 550, 0]
     Liaisons["Liaison 2"] = [825, 0, 348.5]
     Liaisons["Liaison 3"] = [735, 0, 352]
 
+    # Angles
+    teta1 = q_rad[0]
+    teta2 = q_rad[1]
+    teta3 = q_rad[2]
+
     """Chaque segment du robot necessite ces propres coordonnées"""
-    x1=0
-    y1=0
-    z1=L1[1]
+    x1 = 0
+    y1 = 0
+    z1 = L1[1]
 
-    x2=L1[0]*np.cos(teta1)
-    y2=L1[0]*np.sin(teta1)
-    z2=z1
+    x2 = L1[0] * np.cos(teta1)
+    y2 = L1[0] * np.sin(teta1)
+    z2 = z1
 
-    x3=x2+L2[2]*np.cos(teta1+np.pi/2)
-    y3=y2+L2[2]*np.sin(teta1+np.pi/2)
-    z3=z2
+    x3 = x2 + L2[2] * np.cos(teta1 + np.pi / 2)
+    y3 = y2 + L2[2] * np.sin(teta1 + np.pi / 2)
+    z3 = z2
 
-    x4 =x3+L2[0]*np.cos(teta1)
-    y4 =y3+L2[0]*np.sin(teta1)
-    z4 =z3+L2[0]*np.sin(teta2)
+    x4 = x3 + L2[0] * np.cos(teta2) * np.cos(teta1)
+    y4 = y3 + L2[0] * np.cos(teta2) * np.sin(teta1)
+    z4 = z3 + L2[0] * np.sin(teta2)
 
-    x5 =x4+L3[2]*np.cos(teta1-np.pi/2)
-    y5 =y4+L3[2]*np.sin(teta1-np.pi/2)
-    z5 =z4
+    x5 = x4 + L3[2] * np.cos(teta1 - np.pi / 2)
+    y5 = y4 + L3[2] * np.sin(teta1 - np.pi / 2)
+    z5 = z4
 
-    x6 =x5+L3[0]*np.cos(teta1)
-    y6 =y5+L3[0]*np.sin(teta1)
-    z6 =z5+L3[0]*np.sin(teta3)
+    x6 = x5 + L3[0] * np.cos(teta3) * np.cos(teta1)
+    y6 = y5 + L3[0] * np.cos(teta3) * np.sin(teta1)
+    z6 = z5 + L3[0] * np.sin(teta3)
 
     # Definition du rang de l'axe y
-    max_y = max(abs(y1), abs(y2), abs(y3),abs(y4),abs(y5),abs(y6))
+    max_y = max(abs(y1), abs(y2), abs(y3), abs(y4), abs(y5), abs(y6))
     if max_y > 1000:
         y_range = [-1600, 1600]
     elif max_y > 500:
@@ -52,7 +52,7 @@ def bras_rob_model3D(Liaisons,q):
     else:
         y_range = [-500, 500]
 
-    max_x = max(abs(x1), abs(x2), abs(x3),abs(x4),abs(x5),abs(x6))
+    max_x = max(abs(x1), abs(x2), abs(x3), abs(x4), abs(x5), abs(x6))
     if max_x > 1000:
         x_range = [-1600, 1600]
     elif max_x > 500:

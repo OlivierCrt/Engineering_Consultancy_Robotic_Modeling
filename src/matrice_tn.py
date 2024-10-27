@@ -64,78 +64,73 @@ def xy_Ot(result_matrix):
     return (result_matrix[:3,-1])
 
 #MGD avec q liste d'angles, L liste de longueurs
-def mgd(q, Lxz, p,inclin_horiz):
-    lz1 = Lxz[0]
-    lz2 = Lxz[1]
-    lz3 = Lxz[2]
-    q=np.radians(q) #Passage a Radians pour utiliser les formules trigo
+def mgd(q, Liaisons):
+    q_rad = np.radians(q)
 
-    teta = inclin_horiz
-    teta1 = q[0]
-    teta2 = q[1]
-    teta3 = q[2]
+    L1 = Liaisons["Liaison 1"]
+    L2 = Liaisons["Liaison 2"]
+    L3 = Liaisons["Liaison 3"]
 
-    x = (lz1 * np.cos(teta) + lz2 * np.cos(teta + teta2) + lz3 * np.cos(teta + teta2 + teta3))*np.cos(teta1)
-    z = (lz1 * np.sin(teta) + lz2 * np.sin(teta + teta2) + lz3 * np.sin(teta + teta2 + teta3))*np.cos(teta1)
+    # Angles
+    teta1 = q_rad[0]
+    teta2 = q_rad[1]
+    teta3 = q_rad[2]
 
-    h=lz1*np.cos(teta)+lz2+lz3
-    alpha=np.arcsin(p/h)
-    y = (x / np.cos(teta1)) * np.sin(teta1+alpha)
+    x=L1[0] * np.cos(teta1) + L2[2] * np.cos(teta1 + np.pi / 2) + L2[0]*np.cos(teta1)*np.cos(teta2) + L3[2]*np.cos(teta1-np.pi/2) + L3[0]*np.cos(teta1)*np.cos(teta3)
+    y= L1[0]*np.sin(teta1) + L2[2]*np.sin(teta1+np.pi/2) + L2[0]*np.sin(teta1)*np.cos(teta2) + L3[2]*np.sin(teta1-np.pi/2) + L3[0]*np.sin(teta1)*np.cos(teta3)
+    z= L1[1] + L2[0]*np.sin(teta2) + L3[0]*np.sin(teta3)
 
     Xd = np.array([x, y, z])
     return Xd
 
 #Matrice pour definir le critére d'erreur
-def H(Xd, q, Lxz,p,inclin_horiz):
-    X_actuel = mgd(q,Lxz,p,inclin_horiz)
+def H(Xd, q, Liaisons):
+    X_actuel = mgd(q,Liaisons)
     erreur = Xd - X_actuel
     C = 0.5 * np.linalg.norm(erreur)**2
     return C, erreur
 
 
-def jacobienne(q,Lxz,p,inclin_horiz):
-    l1 = Lxz[0]
-    l2 = Lxz[1]
-    l3 = Lxz[2]
+def jacobienne(q,Liaisons):
+    l1=Liaisons["Liaison 1"]
+    l2 = Liaisons["Liaison 2"]
+    l3 = Liaisons["Liaison 3"]
     q = np.radians(q)  # Passage a Radians pour utiliser les formules trigo
 
-    teta = inclin_horiz
     teta1 = q[0]
     teta2 = q[1]
     teta3 = q[2]
 
-    h = l1 * np.cos(teta) + l2 + l3
-    alpha = np.arcsin(p / h)
     J = np.zeros((3, 3))
 
-    J[0, 0] = 0  # ∂x/∂q1
-    J[1, 0] = ((np.sin(teta1)*(l1*np.cos(teta)+l2*np.cos(teta+teta2)+l3*np.cos(teta+teta2+teta3)))/(np.cos(teta1))**2)*np.sin(teta1+alpha)  # ∂y/∂q1
+    J[0, 0] = l1[0]*np.sin(teta1)-l2[2]*np.sin(teta1+(np.pi/2))+l2[0]*np.sin(teta1)*np.cos(teta2)-l3[2]*np.sin(teta1-(np.pi/2))-l3[0]*np.sin(teta1)*np.cos(teta3)  # ∂x/∂q1
+    J[1, 0] = l1[0]*np.cos(teta1)-l2[2]*np.cos(teta1+(np.pi/2))+l2[0]*np.cos(teta1)*np.cos(teta2)-l3[2]*np.cos(teta1-(np.pi/2))-l3[0]*np.cos(teta1)*np.cos(teta3)  # ∂y/∂q1
     J[2, 0] = 0  # ∂z/∂q1
 
-    J[0, 1] = -l2 * np.sin(teta + teta2) - l3 * np.sin(teta + teta2 + teta3)  # ∂x/∂q2
-    J[1, 1] = ((-l2*np.sin(teta+teta2)-l3*np.sin(teta+teta2+teta3))/np.cos(teta1))*np.cos(teta1+alpha)  # ∂y/∂q2
-    J[2, 1] = l2 * np.cos(teta + teta2) + l3 * np.cos(teta + teta2 + teta3)  # ∂z/∂q2
+    J[0, 1] = -l2[0]*np.cos(teta1)*np.sin(teta2)  # ∂x/∂q2
+    J[1, 1] = -l2[0]*np.sin(teta1)*np.sin(teta2)  # ∂y/∂q2
+    J[2, 1] = l2[0]*np.cos(teta2)  # ∂z/∂q2
 
-    J[0, 2] = -l3 * np.sin(teta + teta2 + teta3)  # ∂x/∂q3
-    J[1, 2] = ((-l3*np.sin(teta+teta2+teta3))/np.cos(teta1))*np.sin(teta1+alpha)    # ∂y/∂q3
-    J[2, 2] = l3 * np.cos(teta + teta2 + teta3)  # ∂z/∂q3
+    J[0, 2] = -l3[0]*np.cos(teta1)*np.sin(teta3)  # ∂x/∂q3
+    J[1, 2] = -l3[0]*np.sin(teta1)*np.sin(teta3)   # ∂y/∂q3
+    J[2, 2] = l3[0]*np.cos(teta3)  # ∂z/∂q3
 
     return J
 
-def calcul_direction(q, erreur,Lxz, p1,inclin_horiz):
-    J = jacobienne(q,Lxz,p1,inclin_horiz)
+def calcul_direction(q, erreur,Liaisons):
+    J = jacobienne(q,Liaisons)
     directionG = np.dot(J.T, erreur)
     return directionG
 
 #MGI: On donne une configuration initiale au robot et on demande de ce mettre dans une autre
 #On rentre coordonnées et on récupere des angles
-def mgi(Xd, q_initial, Lxz, p,inclin_horiz,Nb_iter,pas=1, tolerence=1e-7):
+def mgi(Xd, q_initial, Liaisons, Nb_iter, pas=1, tolerence=1e-7):
     historique_erreur = []
     q = np.radians(q_initial)
 
     for i in range(Nb_iter):
         #Calcul initial de Xd et l'erreur
-        C, erreur = H(Xd, q, Lxz, p, inclin_horiz)
+        C, erreur = H(Xd, q, Liaisons)
         norme_error = np.linalg.norm(erreur)
         historique_erreur.append(norme_error)  # Sauvegarde de chaque erreur
 
@@ -143,7 +138,7 @@ def mgi(Xd, q_initial, Lxz, p,inclin_horiz,Nb_iter,pas=1, tolerence=1e-7):
             print(f"Convergence a {i} itérations.")
             break
 
-        directionG=calcul_direction(q, erreur,Lxz, p,inclin_horiz)
+        directionG = calcul_direction(q, erreur, Liaisons)
 
         # Actualisation des angles
         q = q + pas * directionG
@@ -152,11 +147,12 @@ def mgi(Xd, q_initial, Lxz, p,inclin_horiz,Nb_iter,pas=1, tolerence=1e-7):
     q_final = np.degrees(q)%360
     return q_final, historique_erreur
 
-def evaluer_plusieurs_pas(Xd, q_initial, Lxz, p, inclin_horiz, valeurs_pas, Nb_iter):
+def evaluer_plusieurs_pas(Xd, q_initial, Liaisons, valeurs_pas, Nb_iter):
     resultats = {}
+    pas=0
     for pas in valeurs_pas:
         print(f"\nEvaluation avec un pas de {pas}")
-        q_final, historique_erreur = mgi(Xd, q_initial, Lxz, p, inclin_horiz, Nb_iter, pas=pas, tolerence=1e-7)
+        q_final, historique_erreur = mgi(Xd, q_initial, Liaisons, Nb_iter, pas=pas, tolerence=1e-7)
         resultats[pas] = historique_erreur
 
     return resultats

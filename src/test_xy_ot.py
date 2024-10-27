@@ -31,7 +31,7 @@ if round_p:
 # Pour ce TP Z0 représente l'axe vertical et Y0 celui de la profondeur
 print("\nCoordonnées finales grace a matrice T(0,n) en fonction de X0,Y0,Z0:\n", xy_Ot(matrice_T0Tn))
 print("\nCoordonnées (x, y, z) en mm en fonction des angles de la liste q et X0, Y0, Z0:")
-Xd_mgd = mgd(q, Lxz, p1, inclin_horiz)
+Xd_mgd = mgd(q, Liaisons)
 x_mgd = Xd_mgd[0]
 y_mgd = Xd_mgd[1]
 z_mgd = Xd_mgd[2]
@@ -45,21 +45,21 @@ else:
 # Tester plusieurs valeurs du pas
 valeurs_pas = [1.5, 2, 2.5, 3,4,5]
 q_initial=q
-resultats = evaluer_plusieurs_pas(Xd, q_initial, Lxz, p1, inclin_horiz, valeurs_pas, Nb_iter)
+resultats = evaluer_plusieurs_pas(Xd, q_initial, Liaisons, valeurs_pas,Nb_iter)
 # Courbe(resultats, "Évolution de l'erreur en fonction du pas", "Itération", "Erreur")
 
 
 """TERMINER CORRECTEMENT CETTE DERNIERE PARTIE, VALEURS DU MGI INCORRECTES"""
 # Execution du MGI (METHODE CLASSIQUE)
 normal_angle = np.vectorize(lambda angle: angle % 360)
-q_final, historique_erreur = mgi(Xd, q_initial, Lxz, p1, inclin_horiz, Nb_iter)
+q_final, historique_erreur = mgi(Xd, q_initial, Liaisons, Nb_iter)
 
 q_final_deg = normal_angle(np.degrees(q_final))
 error_final = historique_erreur[-1]
 print("\nExecution du MGI (METHODE CLASSIQUE)\nCoordonnées con souhaite atteindre:", Xd)
 print("Solution pour les angles qi:", q_final_deg)
 print("Avec une erreur finale de:", error_final)
-print("Verification de ces angles avec la fonction MGD:", mgd(q_final, Lxz, p1, inclin_horiz))
+print("Verification de ces angles avec la fonction MGD:", mgd(q_final, Liaisons))
 
 
 # Execution du MGI (METHODE OPTIMIZE)
@@ -79,7 +79,7 @@ if result.success:
     qi_solution = result.x
     print("\nExecution du MGI (METHODE OPTIMIZE)\nCoordonnées con souhaite atteindre:", Xe)
     print("Solution pour les angles qi :", qi_solution)
-    print("Verification de ces angles avec la fonction MGD:", mgd(qi_solution, Lxz, p1, inclin_horiz))
+    print("Verification de ces angles avec la fonction MGD:", mgd(qi_solution, Liaisons))
 else:
     print("La solution n'a pas convergé.")
 
