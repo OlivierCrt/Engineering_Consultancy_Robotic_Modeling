@@ -75,8 +75,8 @@ def mgd(q, Lxz, p,inclin_horiz):
     teta2 = q[1]
     teta3 = q[2]
 
-    x = lz1 * np.cos(teta) + lz2 * np.cos(teta + teta2) + lz3 * np.cos(teta + teta2 + teta3)
-    z = lz1 * np.sin(teta) + lz2 * np.sin(teta + teta2) + lz3 * np.sin(teta + teta2 + teta3)
+    x = (lz1 * np.cos(teta) + lz2 * np.cos(teta + teta2) + lz3 * np.cos(teta + teta2 + teta3))*np.cos(teta1)
+    z = (lz1 * np.sin(teta) + lz2 * np.sin(teta + teta2) + lz3 * np.sin(teta + teta2 + teta3))*np.cos(teta1)
 
     h=lz1*np.cos(teta)+lz2+lz3
     alpha=np.arcsin(p/h)
