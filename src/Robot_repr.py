@@ -2,16 +2,14 @@ import plotly.graph_objects as go
 from const_v import *
 
 """FONTION POUR MODELISER EN 3D LE BRAS ROBOT, LA FONCTION EST DECLARE A LA TOUTE FIN"""
-def bras_rob_model3D(Liaisons,q):
+
+
+def bras_rob_model3D(Liaisons, q):
     q_rad = np.radians(q)
 
-    L1=Liaisons["Liaison 1"]
-    L2=Liaisons["Liaison 2"]
-    L3=Liaisons["Liaison 3"]
-
-    Liaisons["Liaison 1"] = [150, 550, 0]
-    Liaisons["Liaison 2"] = [825, 0, 348.5]
-    Liaisons["Liaison 3"] = [735, 0, 352]
+    L1 = Liaisons["Liaison 1"]
+    L2 = Liaisons["Liaison 2"]
+    L3 = Liaisons["Liaison 3"]
 
     # Angles
     teta1 = q_rad[0]
@@ -39,10 +37,12 @@ def bras_rob_model3D(Liaisons,q):
     y5 = y4 + L3[2] * np.sin(teta1 - np.pi / 2)
     z5 = z4
 
-    x6 = x5 + L3[0] * np.cos(teta3) * np.cos(teta1)
-    y6 = y5 + L3[0] * np.cos(teta3) * np.sin(teta1)
-    z6 = z5 + L3[0] * np.sin(teta3)
+    x6 = x5 + L3[0] * np.cos(teta3 + teta2) * np.cos(teta1)
+    y6 = y5 + L3[0] * np.cos(teta3 + teta2) * np.sin(teta1)
+    z6 = z5 + L3[0] * np.sin(teta3 + teta2)
 
+    X = [x3, x4, x6]
+    Z = [z3, z4, z6]
     # Definition du rang de l'axe y
     max_y = max(abs(y1), abs(y2), abs(y3), abs(y4), abs(y5), abs(y6))
     if max_y > 1000:
@@ -85,5 +85,6 @@ def bras_rob_model3D(Liaisons,q):
     )
 
     return fig.show()
+
 
 bras_rob_model3D(Liaisons, q)

@@ -17,7 +17,7 @@ for i in range(len(dh['sigma_i'])):
 
 # Calcul de la transformation complète T(0,3)
 print(f"Transformation T(0,{len(dh['sigma_i'])}) :\n")
-#Matrice avec des parametres sans arrondir
+# Matrice avec des parametres sans arrondir
 matrice_T0Tn = matrice_Tn(dh)
 print(f"{matrice_T0Tn}\n")
 if round_p:
@@ -43,9 +43,9 @@ else:
           "mm) ou valeur de z négative, coordonnés finales (x,y,z): \n", Xd_mgd)
 
 # Tester plusieurs valeurs du pas
-valeurs_pas = [1.5, 2, 2.5, 3,4,5]
-q_initial=q
-resultats = evaluer_plusieurs_pas(Xd, q_initial, Liaisons, valeurs_pas,Nb_iter)
+valeurs_pas = [1.5, 2, 2.5, 3, 4, 5]
+q_initial = q
+resultats = evaluer_plusieurs_pas(Xd, q_initial, Liaisons, valeurs_pas, Nb_iter)
 # Courbe(resultats, "Évolution de l'erreur en fonction du pas", "Itération", "Erreur")
 
 
@@ -60,7 +60,6 @@ print("\nExecution du MGI (METHODE CLASSIQUE)\nCoordonnées con souhaite atteind
 print("Solution pour les angles qi:", q_final_deg)
 print("Avec une erreur finale de:", error_final)
 print("Verification de ces angles avec la fonction MGD:", mgd(q_final, Liaisons))
-
 
 # Execution du MGI (METHODE OPTIMIZE)
 Xe = Xd
@@ -82,4 +81,3 @@ if result.success:
     print("Verification de ces angles avec la fonction MGD:", mgd(qi_solution, Liaisons))
 else:
     print("La solution n'a pas convergé.")
-
