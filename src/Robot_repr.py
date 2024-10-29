@@ -41,8 +41,6 @@ def bras_rob_model3D(Liaisons, q):
     y6 = y5 + L3[0] * np.cos(teta3 + teta2) * np.sin(teta1)
     z6 = z5 + L3[0] * np.sin(teta3 + teta2)
 
-    X = [x3, x4, x6]
-    Z = [z3, z4, z6]
     # Definition du rang de l'axe y
     max_y = max(abs(y1), abs(y2), abs(y3), abs(y4), abs(y5), abs(y6))
     if max_y > 1000:

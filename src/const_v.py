@@ -27,7 +27,7 @@ p1 = dh["r_i"][2]
 inclin_horiz = (np.pi / 2) - np.arctan(dh["r_i"][0] / dh["a_i_m1"][1])
 
 # Angles des liaisons en Degrés
-q = [0, 40, -90]
+q = [0, 90, -90]
 rayon_max1_5 = 1600  # en mm
 
 # Pour le MGI

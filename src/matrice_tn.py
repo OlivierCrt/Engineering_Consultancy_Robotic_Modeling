@@ -113,8 +113,8 @@ def jacobienne(q, Liaisons):
     J[2, 0] = 0  # ∂z/∂q1
 
     J[0, 1] = -l2[0] * np.cos(teta1) * np.sin(teta2)  # ∂x/∂q2
-    J[1, 1] = -l2[0] * np.sin(teta1) * np.sin(teta2)  # ∂y/∂q2
-    J[2, 1] = l2[0] * np.cos(teta2)  # ∂z/∂q2
+    J[1, 1] = -l2[0] * np.sin(teta1) * np.sin(teta2)- l3[0] * np.sin(teta1) * np.sin(teta3 + teta2) # ∂y/∂q2
+    J[2, 1] = l2[0] * np.cos(teta2)+l3[0] * np.sin(teta3 + teta2)  # ∂z/∂q2
 
     J[0, 2] = -l3[0] * np.cos(teta1) * np.sin(teta3)  # ∂x/∂q3
     J[1, 2] = -l3[0] * np.sin(teta1) * np.sin(teta3)  # ∂y/∂q3
