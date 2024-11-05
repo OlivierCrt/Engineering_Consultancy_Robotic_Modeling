@@ -13,7 +13,7 @@ This project aims to develop a motion primitive for the RX160 robot manipulator,
     
 ## Project Structure
 
-### 1. Geometric Modeling
+### 1. Geometric Modeling 
 
 The robot used in this project is a simplified version of the Staubli RX160 (RX160R), with 3 degrees of freedom (3R). You need to:
 
