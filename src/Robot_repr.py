@@ -16,30 +16,24 @@ def bras_rob_model3D(Liaisons, q):
     teta2 = q_rad[1]
     teta3 = q_rad[2]
 
-    """Chaque segment du robot necessite ces propres coordonnées"""
-    x1 = 0
-    y1 = 0
-    z1 = L1[1]
+    # Calculer la position finale avec les mêmes équations que `mgd`
+    x = L1[0] * np.cos(teta1) + L2[2] * np.cos(teta1 + np.pi / 2) + L2[1] * np.cos(teta1) * np.cos(teta2) + \
+        L3[2] * np.cos(teta1 - np.pi / 2) + L3[1] * np.cos(teta1) * np.cos(teta3 + teta2)
 
-    x2 = L1[0] * np.cos(teta1)
-    y2 = L1[0] * np.sin(teta1)
-    z2 = z1
+    y = L1[0] * np.sin(teta1) + L2[2] * np.sin(teta1 + np.pi / 2) + L2[1] * np.sin(teta1) * np.cos(teta2) + \
+        L3[2] * np.sin(teta1 - np.pi / 2) + L3[1] * np.sin(teta1) * np.cos(teta3 + teta2)
 
-    x3 = x2 + L2[2] * np.cos(teta1 + np.pi / 2)
-    y3 = y2 + L2[2] * np.sin(teta1 + np.pi / 2)
-    z3 = z2
+    z = L1[1] + L2[1] * np.sin(teta2) + L3[1] * np.sin(teta3 + teta2)
 
-    x4 = x3 + L2[0] * np.cos(teta2) * np.cos(teta1)
-    y4 = y3 + L2[0] * np.cos(teta2) * np.sin(teta1)
-    z4 = z3 + L2[0] * np.sin(teta2)
-
-    x5 = x4 + L3[2] * np.cos(teta1 - np.pi / 2)
-    y5 = y4 + L3[2] * np.sin(teta1 - np.pi / 2)
-    z5 = z4
-
-    x6 = x5 + L3[0] * np.cos(teta3 + teta2) * np.cos(teta1)
-    y6 = y5 + L3[0] * np.cos(teta3 + teta2) * np.sin(teta1)
-    z6 = z5 + L3[0] * np.sin(teta3 + teta2)
+    # Calculer les coordonnées intermédiaires pour le tracé 3D
+    x1, y1, z1 = 0, 0, L1[1]
+    x2, y2, z2 = L1[0] * np.cos(teta1), L1[0] * np.sin(teta1), z1
+    x3, y3, z3 = x2 + L2[2] * np.cos(teta1 + np.pi / 2), y2 + L2[2] * np.sin(teta1 + np.pi / 2), z2
+    x4, y4, z4 = x3 + L2[1] * np.cos(teta2) * np.cos(teta1), y3 + L2[1] * np.cos(teta2) * np.sin(teta1), z3 + L2[
+        1] * np.sin(teta2)
+    x5, y5, z5 = x4 + L3[2] * np.cos(teta1 - np.pi / 2), y4 + L3[2] * np.sin(teta1 - np.pi / 2), z4
+    x6, y6, z6 = x5 + L3[1] * np.cos(teta3 + teta2) * np.cos(teta1), y5 + L3[1] * np.cos(teta3 + teta2) * np.sin(
+        teta1), z5 + L3[1] * np.sin(teta3 + teta2)
 
     # Definition du rang de l'axe y
     max_y = max(abs(y1), abs(y2), abs(y3), abs(y4), abs(y5), abs(y6))

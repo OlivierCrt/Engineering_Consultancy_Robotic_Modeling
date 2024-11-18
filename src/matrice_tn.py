@@ -36,24 +36,37 @@ def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri):
 
 
 # mgd
-def matrice_Tn(dh):
+def matrice_Tn(dh, round_decimals=3, small_threshold=1e-6):
     """
-    qi: liste des qi
-    alphai-1 liste des alpha
-    ri liste des r
-    ai-1 liste
-    round tuple : (decimals,threshold)
-    return matrice T0,n correspondante avec les éléments arrondis.
+    Calcule la matrice T0,n en utilisant les paramètres DH.
+
+    Arguments:
+    - dh: Dictionnaire contenant les paramètres DH
+    - round_decimals: Nombre de décimales pour l'arrondi (par défaut: 1)
+    - small_threshold: Seuil pour définir les valeurs très petites à zéro (par défaut: 1e-6)
+
+    Retourne:
+    - Matrice T0,n arrondie avec les valeurs affichées sans notation scientifique
     """
     nbliaison = len(dh["sigma_i"])
     mat_list = []
+
+    # Calculer la matrice pour chaque liaison
     for i in range(nbliaison):
         mat_temp = matrice_Tim1_Ti(dh["sigma_i"][i], dh["a_i_m1"][i], dh["alpha_i_m1"][i], dh["r_i"][i])
         mat_list.append(mat_temp)
 
+    # Multiplier toutes les matrices pour obtenir T0,n
     result_matrix = np.eye(4)
     for mat in mat_list:
         result_matrix = np.dot(result_matrix, mat)
+
+    # Arrondir la matrice résultante
+    result_matrix = np.round(result_matrix, round_decimals)
+    result_matrix[np.abs(result_matrix) < small_threshold] = 0
+
+    # Configurer l'affichage pour éviter la notation scientifique et limiter à 1 décimale
+    np.set_printoptions(precision=1, suppress=True, floatmode='fixed')
 
     return result_matrix
 
@@ -76,110 +89,101 @@ def mgd(q, Liaisons):
     teta2 = q_rad[1]
     teta3 = q_rad[2]
 
-    x = L1[0] * np.cos(teta1) + L2[2] * np.cos(teta1 + np.pi / 2) + L2[0] * np.cos(teta1) * np.cos(teta2) + L3[
-        2] * np.cos(teta1 - np.pi / 2) + L3[0] * np.cos(teta1) * np.cos(teta3 + teta2)
-    y = L1[0] * np.sin(teta1) + L2[2] * np.sin(teta1 + np.pi / 2) + L2[0] * np.sin(teta1) * np.cos(teta2) + L3[
-        2] * np.sin(teta1 - np.pi / 2) + L3[0] * np.sin(teta1) * np.cos(teta3 + teta2)
-    z = L1[1] + L2[0] * np.sin(teta2) + L3[0] * np.sin(teta3 + teta2)
+    x = L1[0] * np.cos(teta1) + L2[2] * np.cos(teta1 + np.pi / 2) + L2[1] * np.cos(teta1) * np.cos(teta2) + \
+        L3[
+            2] * np.cos(teta1 - np.pi / 2) + L3[1] * np.cos(teta1) * np.cos(teta3 + teta2)
+    y = L1[0] * np.sin(teta1) + L2[2] * np.sin(teta1 + np.pi / 2) + L2[1] * np.sin(teta1) * np.cos(teta2) + \
+        L3[
+            2] * np.sin(teta1 - np.pi / 2) + L3[1] * np.sin(teta1) * np.cos(teta3 + teta2)
+    z = L1[1] + L2[1] * np.sin(teta2) + L3[1] * np.sin(teta3 + teta2)
 
     Xd = np.array([x, y, z])
     return Xd
 
 
-# Matrice pour definir le critére d'erreur
-def H(Xd, q, Liaisons):
-    X_actuel = mgd(q, Liaisons)
-    erreur = Xd - X_actuel
-    C = 0.5 * np.linalg.norm(erreur) ** 2
-    return C, erreur
-
-
-def jacobienne(q, Liaisons):
-    l1 = Liaisons["Liaison 1"]
-    l2 = Liaisons["Liaison 2"]
-    l3 = Liaisons["Liaison 3"]
-    q = np.radians(q)  # Passage a Radians pour utiliser les formules trigo
-
-    teta1 = q[0]
-    teta2 = q[1]
-    teta3 = q[2]
-
-    J = np.zeros((3, 3))
-
-    J[0, 0] = l1[0] * np.sin(teta1) - l2[2] * np.sin(teta1 + (np.pi / 2)) + l2[0] * np.sin(teta1) * np.cos(teta2) - l3[
-        2] * np.sin(teta1 - (np.pi / 2)) - l3[0] * np.sin(teta1) * np.cos(teta3)  # ∂x/∂q1
-    J[1, 0] = l1[0] * np.cos(teta1) - l2[2] * np.cos(teta1 + (np.pi / 2)) + l2[0] * np.cos(teta1) * np.cos(teta2) - l3[
-        2] * np.cos(teta1 - (np.pi / 2)) - l3[0] * np.cos(teta1) * np.cos(teta3)  # ∂y/∂q1
-    J[2, 0] = 0  # ∂z/∂q1
-
-    J[0, 1] = -l2[0] * np.cos(teta1) * np.sin(teta2)  # ∂x/∂q2
-    J[1, 1] = -l2[0] * np.sin(teta1) * np.sin(teta2)- l3[0] * np.sin(teta1) * np.sin(teta3 + teta2) # ∂y/∂q2
-    J[2, 1] = l2[0] * np.cos(teta2)+l3[0] * np.sin(teta3 + teta2)  # ∂z/∂q2
-
-    J[0, 2] = -l3[0] * np.cos(teta1) * np.sin(teta3)  # ∂x/∂q3
-    J[1, 2] = -l3[0] * np.sin(teta1) * np.sin(teta3)  # ∂y/∂q3
-    J[2, 2] = l3[0] * np.cos(teta3)  # ∂z/∂q3
-
-    return J
-
-
-def calcul_direction(q, erreur, Liaisons):
-    J = jacobienne(q, Liaisons)
-    directionG = np.dot(J.T, erreur)
-    return directionG
-
-
 # MGI: On donne une configuration initiale au robot et on demande de ce mettre dans une autre
 # On rentre coordonnées et on récupere des angles
-def mgi(Xd, q_initial, Liaisons, Nb_iter, pas=1, tolerence=1e-7):
-    historique_erreur = []
-    q = np.radians(q_initial)
+"""Il faut rajouter les Liaisons comme param d'entrée"""
+def mgi(Xd):
+    x = Xd[0]
+    y = Xd[1]
+    z = Xd[2]
+    solutions = []
 
-    for i in range(Nb_iter):
-        # Calcul initial de Xd et l'erreur
-        C, erreur = H(Xd, q, Liaisons)
-        norme_error = np.linalg.norm(erreur)
-        historique_erreur.append(norme_error)  # Sauvegarde de chaque erreur
+    def calculer_solutions(q1):
+        # Constantes données
+        X = 825
+        Y = 735
+        Z1 = np.cos(q1) * x + np.sin(q1) * y - 150
+        Z2 = z - 550
 
-        if norme_error < tolerence:
-            print(f"Convergence a {i} itérations.")
-            break
+        # Calcul de q3
+        c3 = (Z1 ** 2 + Z2 ** 2 - X ** 2 - Y ** 2) / (2 * X * Y)
 
-        directionG = calcul_direction(q, erreur, Liaisons)
+        q31 = np.atan2(np.sqrt(1 - c3 ** 2), c3)
+        q32 = np.atan2(-1*np.sqrt(1 - c3 ** 2), c3)
 
-        # Actualisation des angles
-        q = q + pas * directionG
+        # Calcul de B1, B21 et B22
+        B1 = X + Y * c3
+        B21 = Y * np.sin(q31)
+        B22 = Y * np.sin(q32)
 
-    # Convertir angles finales de radians a degrés (0°-360°)
-    q_final = np.degrees(q) % 360
-    return q_final, historique_erreur
+        # Calcul de q2 pour les deux solutions de q3
+        s21 = (B1 * Z2 - B21 * Z1) / (B1 ** 2 + B21 ** 2)
+        c21 = (B1 * Z1 + B21 * Z2) / (B1 ** 2 + B21 ** 2)
+        q21 = np.atan2(s21, c21)
+
+        s22 = (B1 * Z2 - B22 * Z1) / (B1 ** 2 + B22 ** 2)
+        c22 = (B1 * Z1 + B22 * Z2) / (B1 ** 2 + B22 ** 2)
+        q22 = np.atan2(s22, c22)
+
+        # Convertir les angles en degrés
+        q1_deg = np.degrees(q1)
+        q21 = np.degrees(q21)
+        q22 = np.degrees(q22)
+        q31 = np.degrees(q31)
+        q32 = np.degrees(q32)
+
+        # Retourner les deux solutions possibles pour ce q1
+        return [
+            [q1_deg, q21, q31],
+            [q1_deg, q22, q32]
+        ]
+
+    # Premier ensemble de solutions en utilisant q1 = atan2(y, x)
+    q1_1 = np.atan2(y, x)
+    solutions.extend(calculer_solutions(q1_1))
+
+    # Deuxième ensemble de solutions en utilisant q1 = atan2(y, x) - pi
+    q1_2 = q1_1 - np.pi
+    solutions.extend(calculer_solutions(q1_2))
+
+    return solutions
 
 
-def evaluer_plusieurs_pas(Xd, q_initial, Liaisons, valeurs_pas, Nb_iter):
-    resultats = {}
-    pas = 0
-    for pas in valeurs_pas:
-        print(f"\nEvaluation avec un pas de {pas}")
-        q_final, historique_erreur = mgi(Xd, q_initial, Liaisons, Nb_iter, pas=pas, tolerence=1e-7)
-        resultats[pas] = historique_erreur
+def verifier_solutions(Xd, Liaisons):
+    # Obtenir toutes les combinaisons possibles d'angles avec la fonction mgi
+    solutions = mgi(Xd)
+    solutions = np.round(solutions, 2)  # Arrondir pour une meilleure lisibilité
 
-    return resultats
+    print("\nValeurs possibles des angles pour atteindre la configuration souhaitée Xd:", Xd)
+    print(solutions)
 
+    # Itérer sur chaque combinaison d'angles et vérifier avec la fonction mgd
+    for i, q in enumerate(solutions):
+        # Calculer les coordonnées (x, y, z) en utilisant la fonction mgd avec les angles q
+        Xd_mgd = mgd(q, Liaisons)
+        Xd_mgd = np.round(Xd_mgd, 2)  # Arrondir pour comparer
 
-def Courbe(resultats, titre, labelx, labely):
-    plt.figure(figsize=(10, 6))
-    for pas, historique_erreur in resultats.items():
-        plt.plot(historique_erreur, label=f"Pas = {pas}")
-    plt.title(titre)
-    plt.xlabel(labelx)
-    plt.ylabel(labely)
-    plt.legend()
-    plt.grid(True)
-    plt.show()
+        # Calculer l'erreur entre les coordonnées souhaitées et celles obtenues
+        erreur = np.linalg.norm(Xd_mgd - Xd)
 
+        # Afficher le résultat pour chaque ensemble d'angles
+        print(f"\nVérification de la solution {i + 1}: Angles = {q}")
+        print(f"Coordonnées obtenues par MGD: {Xd_mgd}")
+        print(f"Erreur par rapport à Xd: {erreur}")
 
-def fonction_cout(qi, Xe, dh):
-    # Mettre à jour les paramètres DH avec les angles qi
-    dh["sigma_i"] = qi  # Ajuste les valeurs d'angles avec les `qi` donnés en entrée
-    X_calculé = matrice_Tn(dh)[:3, -1]  # Obtient les coordonnées finales avec le MGD et les `qi`
-    return np.linalg.norm(Xe - X_calculé)  # Retourne l'écart par rapport à Xe.
+        if erreur < 0.1:  # Tolérance pour considérer que la solution est correcte
+            print("Résultat : Correct !")
+        else:
+            print("Résultat : Incorrect")
