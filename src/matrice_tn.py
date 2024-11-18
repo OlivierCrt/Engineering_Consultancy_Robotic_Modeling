@@ -103,19 +103,21 @@ def mgd(q, Liaisons):
 
 # MGI: On donne une configuration initiale au robot et on demande de ce mettre dans une autre
 # On rentre coordonnées et on récupere des angles
-"""Il faut rajouter les Liaisons comme param d'entrée"""
-def mgi(Xd):
+def mgi(Xd, Liaisons):
     x = Xd[0]
     y = Xd[1]
     z = Xd[2]
+    L1 = Liaisons["Liaison 1"]
+    L2 = Liaisons["Liaison 2"]
+    L3 = Liaisons["Liaison 3"]
     solutions = []
 
     def calculer_solutions(q1):
         # Constantes données
-        X = 825
-        Y = 735
-        Z1 = np.cos(q1) * x + np.sin(q1) * y - 150
-        Z2 = z - 550
+        X = L2[1]
+        Y = L3[1]
+        Z1 = np.cos(q1) * x + np.sin(q1) * y - L1[0]
+        Z2 = z - L1[1]
 
         # Calcul de q3
         c3 = (Z1 ** 2 + Z2 ** 2 - X ** 2 - Y ** 2) / (2 * X * Y)
@@ -163,7 +165,7 @@ def mgi(Xd):
 
 def verifier_solutions(Xd, Liaisons):
     # Obtenir toutes les combinaisons possibles d'angles avec la fonction mgi
-    solutions = mgi(Xd)
+    solutions = mgi(Xd, Liaisons)
     solutions = np.round(solutions, 2)  # Arrondir pour une meilleure lisibilité
 
     print("\nValeurs possibles des angles pour atteindre la configuration souhaitée Xd:", Xd)
