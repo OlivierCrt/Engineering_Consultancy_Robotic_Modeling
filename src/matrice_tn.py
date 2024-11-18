@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from const_v import *
 
 
 def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri):
@@ -58,6 +59,81 @@ def matrice_Tn(dh):
     return result_matrix
 
 
+
+
+def calculer_jacobien(dh):
+    """
+    Calcule le Jacobien d'un manipulateur à partir des paramètres DH et des matrices de transformation.
+    
+    Paramètres:
+    dh : dict
+        Dictionnaire contenant les paramètres DH du manipulateur et les types d'articulations :
+        - "sigma_i": liste des types d'articulations (0 pour rotoïde, 1 pour prismatique)
+        - "a_i_m1", "alpha_i_m1", "r_i", "sigma_i" : paramètres DH
+    
+    Retourne:
+    np.ndarray
+        Jacobien 6xN où N est le nombre d'articulations.
+    """
+    
+    nbliaison = len(dh["sigma_i"])  # Nombre d'articulations
+    T_matrices = []  # Stocker les matrices de transformation successives
+    result_matrix = np.eye(4)  # Initialiser avec la matrice identité 4x4
+    
+    # Calcul des matrices de transformation T0_1, T1_2, ..., Tn-1_n
+    for i in range(nbliaison):
+        # Calculer la transformation de chaque articulation
+        mat_temp = matrice_Tim1_Ti(dh["sigma_i"][i], dh["a_i_m1"][i], dh["alpha_i_m1"][i], dh["r_i"][i])
+        result_matrix = np.dot(result_matrix, mat_temp)
+        T_matrices.append(result_matrix)  # Accumuler la transformation totale
+
+    # Position de l'effecteur final (dernier point de transformation)
+    p_e = result_matrix[:3, 3]  # Les trois premières lignes de la dernière colonne de Tn
+
+    # Initialisation du Jacobien
+    J_P = []  # Partie de translation du Jacobien
+    J_O = []  # Partie de rotation du Jacobien
+
+    # Calcul des colonnes du Jacobien pour chaque articulation
+    for i in range(nbliaison):
+        # Matrice de transformation de i-1 à i
+        T_i = T_matrices[i]
+        p_i = T_i[:3, 3]  # Position de l'articulation i
+        z_i_1 = T_i[:3, 2]  # Z_i-1 : troisième colonne pour la rotation de l'articulation i-1
+
+        # Différencier entre articulation prismatique et rotoïde
+        if dh["sigma_i"][i] == 0:  # Articulation rotoïde
+            J_P_i = np.cross(z_i_1, p_e - p_i)
+            J_O_i = z_i_1
+        else:  # Articulation prismatique
+            J_P_i = z_i_1
+            J_O_i = np.zeros(3)
+
+        # Ajouter les colonnes de JP et JO pour cette articulation
+        J_P.append(J_P_i)
+        J_O.append(J_O_i)
+
+    # Conversion en matrices numpy pour la sortie
+    J_P = np.array(J_P).T  # Transformer en une matrice 3xN
+    J_O = np.array(J_O).T  # Transformer en une matrice 3xN
+
+    # Concatenation pour obtenir le Jacobien 6xN
+    J = np.vstack((J_P, J_O))
+    
+    return J
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Fonction qui donne les coordonnées obtenus d'une matrice T(0,n)
 def xy_Ot(result_matrix):
     return (result_matrix[:3, -1])
@@ -86,100 +162,9 @@ def mgd(q, Liaisons):
     return Xd
 
 
-# Matrice pour definir le critére d'erreur
-def H(Xd, q, Liaisons):
-    X_actuel = mgd(q, Liaisons)
-    erreur = Xd - X_actuel
-    C = 0.5 * np.linalg.norm(erreur) ** 2
-    return C, erreur
+jacobien=calculer_jacobien(dh)
+print(jacobien)
 
 
-def jacobienne(q, Liaisons):
-    l1 = Liaisons["Liaison 1"]
-    l2 = Liaisons["Liaison 2"]
-    l3 = Liaisons["Liaison 3"]
-    q = np.radians(q)  # Passage a Radians pour utiliser les formules trigo
-
-    teta1 = q[0]
-    teta2 = q[1]
-    teta3 = q[2]
-
-    J = np.zeros((3, 3))
-
-    J[0, 0] = l1[0] * np.sin(teta1) - l2[2] * np.sin(teta1 + (np.pi / 2)) + l2[0] * np.sin(teta1) * np.cos(teta2) - l3[
-        2] * np.sin(teta1 - (np.pi / 2)) - l3[0] * np.sin(teta1) * np.cos(teta3)  # ∂x/∂q1
-    J[1, 0] = l1[0] * np.cos(teta1) - l2[2] * np.cos(teta1 + (np.pi / 2)) + l2[0] * np.cos(teta1) * np.cos(teta2) - l3[
-        2] * np.cos(teta1 - (np.pi / 2)) - l3[0] * np.cos(teta1) * np.cos(teta3)  # ∂y/∂q1
-    J[2, 0] = 0  # ∂z/∂q1
-
-    J[0, 1] = -l2[0] * np.cos(teta1) * np.sin(teta2)  # ∂x/∂q2
-    J[1, 1] = -l2[0] * np.sin(teta1) * np.sin(teta2)- l3[0] * np.sin(teta1) * np.sin(teta3 + teta2) # ∂y/∂q2
-    J[2, 1] = l2[0] * np.cos(teta2)+l3[0] * np.sin(teta3 + teta2)  # ∂z/∂q2
-
-    J[0, 2] = -l3[0] * np.cos(teta1) * np.sin(teta3)  # ∂x/∂q3
-    J[1, 2] = -l3[0] * np.sin(teta1) * np.sin(teta3)  # ∂y/∂q3
-    J[2, 2] = l3[0] * np.cos(teta3)  # ∂z/∂q3
-
-    return J
 
 
-def calcul_direction(q, erreur, Liaisons):
-    J = jacobienne(q, Liaisons)
-    directionG = np.dot(J.T, erreur)
-    return directionG
-
-
-# MGI: On donne une configuration initiale au robot et on demande de ce mettre dans une autre
-# On rentre coordonnées et on récupere des angles
-def mgi(Xd, q_initial, Liaisons, Nb_iter, pas=1, tolerence=1e-7):
-    historique_erreur = []
-    q = np.radians(q_initial)
-
-    for i in range(Nb_iter):
-        # Calcul initial de Xd et l'erreur
-        C, erreur = H(Xd, q, Liaisons)
-        norme_error = np.linalg.norm(erreur)
-        historique_erreur.append(norme_error)  # Sauvegarde de chaque erreur
-
-        if norme_error < tolerence:
-            print(f"Convergence a {i} itérations.")
-            break
-
-        directionG = calcul_direction(q, erreur, Liaisons)
-
-        # Actualisation des angles
-        q = q + pas * directionG
-
-    # Convertir angles finales de radians a degrés (0°-360°)
-    q_final = np.degrees(q) % 360
-    return q_final, historique_erreur
-
-
-def evaluer_plusieurs_pas(Xd, q_initial, Liaisons, valeurs_pas, Nb_iter):
-    resultats = {}
-    pas = 0
-    for pas in valeurs_pas:
-        print(f"\nEvaluation avec un pas de {pas}")
-        q_final, historique_erreur = mgi(Xd, q_initial, Liaisons, Nb_iter, pas=pas, tolerence=1e-7)
-        resultats[pas] = historique_erreur
-
-    return resultats
-
-
-def Courbe(resultats, titre, labelx, labely):
-    plt.figure(figsize=(10, 6))
-    for pas, historique_erreur in resultats.items():
-        plt.plot(historique_erreur, label=f"Pas = {pas}")
-    plt.title(titre)
-    plt.xlabel(labelx)
-    plt.ylabel(labely)
-    plt.legend()
-    plt.grid(True)
-    plt.show()
-
-
-def fonction_cout(qi, Xe, dh):
-    # Mettre à jour les paramètres DH avec les angles qi
-    dh["sigma_i"] = qi  # Ajuste les valeurs d'angles avec les `qi` donnés en entrée
-    X_calculé = matrice_Tn(dh)[:3, -1]  # Obtient les coordonnées finales avec le MGD et les `qi`
-    return np.linalg.norm(Xe - X_calculé)  # Retourne l'écart par rapport à Xe.

@@ -1,5 +1,6 @@
 from matrice_tn import *
 from const_v import *
+from Robot_repr import *
 import numpy as np
 from scipy.optimize import minimize
 
