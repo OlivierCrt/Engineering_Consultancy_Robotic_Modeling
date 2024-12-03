@@ -1,6 +1,7 @@
 from matrice_tn import *
 from const_v import *
 import numpy as np
+from trajectory_generation import *
 
 # Afficher chaque transformation pour suivre le calcul
 for i in range(len(dh['sigma_i'])):
@@ -33,3 +34,13 @@ else:
           "mm) ou valeur de z négative, coordonnés finales (x,y,z): \n", Xd_mgd)
 
 verifier_solutions(Xd, Liaisons)
+
+#Genération de trajectoire
+# Test génération de trajectoire
+V1 = 10  # Vitesse 1 (par exemple)
+V2 = 20  # Vitesse 2 (par exemple)
+
+A = np.array([5, 5, 0])  # (par exemple)
+B = np.array([10, 20, 0])  # (par exemple)
+
+a = traj(A,B,V1,V2,Debug=True)
