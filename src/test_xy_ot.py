@@ -2,6 +2,9 @@ from matrice_tn import *
 from const_v import *
 import numpy as np
 from scipy.optimize import minimize
+from trajectory_generation import *
+
+
 
 # Afficher chaque transformation pour suivre le calcul
 for i in range(len(dh['sigma_i'])):
@@ -81,3 +84,14 @@ if result.success:
     print("Verification de ces angles avec la fonction MGD:", mgd(qi_solution, Liaisons))
 else:
     print("La solution n'a pas convergé.")
+
+
+#Genération de trajectoire
+# Test génération de trajectoire
+V1 = 10  # Vitesse 1 (par exemple)
+V2 = 20  # Vitesse 2 (par exemple)
+
+A = np.array([5, 5, 0])  # (par exemple)
+B = np.array([10, 20, 0])  # (par exemple)
+
+a = traj(A,B,V1,V2,Debug=True)

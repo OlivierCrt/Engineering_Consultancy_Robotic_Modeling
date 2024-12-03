@@ -10,7 +10,7 @@ def traj(A,B,V1,V2, Debug = False):
     diam = np.linalg.norm(B - A)
     ray = diam/2
 
-    # Temps des transitions
+    # Temps de commutation 
 
     t0 = 0
     t1 = V1/K
@@ -20,7 +20,7 @@ def traj(A,B,V1,V2, Debug = False):
     tf = (V2/K) + t4
 
     if Debug :
-        print(f"{t1},{t2},{t3},{t4},{tf}")
+        print(f"t1 = {t1},t2 = {t2},t3 = {t3},t4 = {t4},tf = {tf}")
         
     # Temps échantillonné
     time = np.linspace(t0, tf, 1000)
@@ -71,10 +71,4 @@ def traj(A,B,V1,V2, Debug = False):
 
     return 0
 
-V1 = 10  # Vitesse 1 (par exemple)
-V2 = 20  # Vitesse 2 (par exemple)
 
-A = np.array([5, 5, 0])  # (par exemple)
-B = np.array([10, 20, 0])  # (par exemple)
-
-a = traj(A,B,V1,V2,Debug=True)
