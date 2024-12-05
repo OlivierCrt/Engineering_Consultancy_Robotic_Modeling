@@ -122,8 +122,8 @@ def mgi(Xd, Liaisons):
         # Calcul de q3
         c3 = (Z1 ** 2 + Z2 ** 2 - X ** 2 - Y ** 2) / (2 * X * Y)
 
-        q31 = np.arctan2(np.sqrt(1 - c3 ** 2), c3)
-        q32 = np.arctan2(-1*np.sqrt(1 - c3 ** 2), c3)
+        q31 = np.atan2(np.sqrt(1 - c3 ** 2), c3)
+        q32 = np.atan2(-1*np.sqrt(1 - c3 ** 2), c3)
 
         # Calcul de B1, B21 et B22
         B1 = X + Y * c3
@@ -133,11 +133,11 @@ def mgi(Xd, Liaisons):
         # Calcul de q2 pour les deux solutions de q3
         s21 = (B1 * Z2 - B21 * Z1) / (B1 ** 2 + B21 ** 2)
         c21 = (B1 * Z1 + B21 * Z2) / (B1 ** 2 + B21 ** 2)
-        q21 = np.arctan2(s21, c21)
+        q21 = np.atan2(s21, c21)
 
         s22 = (B1 * Z2 - B22 * Z1) / (B1 ** 2 + B22 ** 2)
         c22 = (B1 * Z1 + B22 * Z2) / (B1 ** 2 + B22 ** 2)
-        q22 = np.arctan2(s22, c22)
+        q22 = np.atan2(s22, c22)
 
         # Convertir les angles en degrés
         q1_deg = np.degrees(q1)
@@ -152,11 +152,11 @@ def mgi(Xd, Liaisons):
             [q1_deg, q22, q32]
         ]
 
-    # Premier ensemble de solutions en utilisant q1 = arctan2(y, x)
-    q1_1 = np.arctan2(y, x)
+    # Premier ensemble de solutions en utilisant q1 = atan2(y, x)
+    q1_1 = np.atan2(y, x)
     solutions.extend(calculer_solutions(q1_1))
 
-    # Deuxième ensemble de solutions en utilisant q1 = arctan2(y, x) - pi
+    # Deuxième ensemble de solutions en utilisant q1 = atan2(y, x) - pi
     q1_2 = q1_1 - np.pi
     solutions.extend(calculer_solutions(q1_2))
 
@@ -183,7 +183,7 @@ def verifier_solutions(Xd, Liaisons):
         # Afficher le résultat pour chaque ensemble d'angles
         print(f"\nVérification de la solution {i + 1}: Angles = {q}")
         print(f"Coordonnées obtenues par MGD: {Xd_mgd}")
-        print(f"Erreur par rapport à Xd: {erreur}")
+        print(f"Erreur par rapport à Xd: {np.round(erreur,3)}")
 
         if erreur < 0.1:  # Tolérance pour considérer que la solution est correcte
             print("Résultat : Correct !")

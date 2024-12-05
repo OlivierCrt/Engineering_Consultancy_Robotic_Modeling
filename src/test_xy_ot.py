@@ -4,7 +4,6 @@ import numpy as np
 from trajectory_generation import *
 
 
-
 # Afficher chaque transformation pour suivre le calcul
 for i in range(len(dh['sigma_i'])):
     print(f"Transformation T({i},{i + 1}):\n")
