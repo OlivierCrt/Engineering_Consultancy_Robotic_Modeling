@@ -68,7 +68,7 @@ def bras_rob_model3D(Liaisons, q):
     )])
 
     # Configuration d'axes personalisés (Z en vertical et Y en profondeur)
-    fig.update_layout(scene=dict(
+    fig.update_layout(scene_aspectmode='cube',scene=dict(
         xaxis=dict(title="Axe X", range=x_range),
         yaxis=dict(title="Axe Y", range=y_range),
         zaxis=dict(title="Axe Z")

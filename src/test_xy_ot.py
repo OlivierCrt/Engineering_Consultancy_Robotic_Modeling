@@ -36,6 +36,7 @@ else:
 
 verifier_solutions(Xd, Liaisons)
 
+print("\n")
 #Genération de trajectoire
 # Test génération de trajectoire
 V1 = 10  # Vitesse 1 (par exemple)
