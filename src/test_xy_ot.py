@@ -33,3 +33,5 @@ else:
           "mm) ou valeur de z négative, coordonnés finales (x,y,z): \n", Xd_mgd)
 
 verifier_solutions(Xd, Liaisons)
+
+

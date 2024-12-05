@@ -183,7 +183,7 @@ def verifier_solutions(Xd, Liaisons):
         # Afficher le résultat pour chaque ensemble d'angles
         print(f"\nVérification de la solution {i + 1}: Angles = {q}")
         print(f"Coordonnées obtenues par MGD: {Xd_mgd}")
-        print(f"Erreur par rapport à Xd: {erreur}")
+        print(f"Erreur par rapport à Xd: {np.round(erreur,3)}")
 
         if erreur < 0.1:  # Tolérance pour considérer que la solution est correcte
             print("Résultat : Correct !")
