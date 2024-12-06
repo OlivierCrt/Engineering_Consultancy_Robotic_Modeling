@@ -12,12 +12,6 @@ def bras_rob_model3D_animation(Liaisons, Robot_pos, frames_per_transition=30, ra
         z = rayon_max1_5 * np.outer(np.ones(np.size(u)), np.cos(v))
         return x, y, z
 
-    # S'assurer que le dernier point est répété deux fois
-    if Robot_pos:
-        dernier_point = Robot_pos[-1]
-        if len(Robot_pos) < 3 or Robot_pos[-1] != Robot_pos[-2] or Robot_pos[-2] != Robot_pos[-3]:
-            Robot_pos.extend([dernier_point, dernier_point])  # Ajouter exactement deux points supplémentaires
-
     # Calculer les angles pour chaque position dans Robot_pos
     all_angles = []
     for pos in Robot_pos:
@@ -43,7 +37,7 @@ def bras_rob_model3D_animation(Liaisons, Robot_pos, frames_per_transition=30, ra
         x=x.flatten(),
         y=y.flatten(),
         z=z.flatten(),
-        opacity=0.2,  # Transparence
+        opacity=0.1,  # Transparence
         color='lightblue',  # Couleur
         alphahull=0,
         showlegend=False  # Masquer de la légende
