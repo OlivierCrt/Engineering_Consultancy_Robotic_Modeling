@@ -122,8 +122,14 @@ def mgi(Xd, Liaisons):
         # Calcul de q3
         c3 = (Z1 ** 2 + Z2 ** 2 - X ** 2 - Y ** 2) / (2 * X * Y)
 
+        # Limiter c3 à l'intervalle [-1, 1]
+        if c3 < -1 or c3 > 1:
+            return []  # Aucune solution si c3 est hors de portée
+
+        c3 = np.clip(c3, -1, 1)  # Forcer c3 dans l'intervalle [-1, 1]
+
         q31 = np.atan2(np.sqrt(1 - c3 ** 2), c3)
-        q32 = np.atan2(-1*np.sqrt(1 - c3 ** 2), c3)
+        q32 = np.atan2(-1 * np.sqrt(1 - c3 ** 2), c3)
 
         # Calcul de B1, B21 et B22
         B1 = X + Y * c3
@@ -161,6 +167,7 @@ def mgi(Xd, Liaisons):
     solutions.extend(calculer_solutions(q1_2))
 
     return solutions
+
 
 
 def verifier_solutions(Xd, Liaisons):

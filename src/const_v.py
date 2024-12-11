@@ -27,7 +27,7 @@ p1 = dh["r_i"][2]
 inclin_horiz = (np.pi / 2) - np.arctan(dh["r_i"][0] / dh["a_i_m1"][1])
 
 # Angles des liaisons en Degrés
-q = [ -180.0,128.8 ,105.1]
+q = [ 0,45 , -90]
 rayon_max1_5 = 1600  # en mm
 
 # Pour le MGI
@@ -40,3 +40,16 @@ Liaisons = {}
 Liaisons["Liaison 1"] = [150, 550, 0]
 Liaisons["Liaison 2"] = [0, 825, 352]
 Liaisons["Liaison 3"] = [0, 735, 352]
+
+Robot_pos=[
+    [500, 0, 600],
+    [1000, -1000, 600],
+    [1400, 0, 600],
+    [1000, 1000, 600],
+    [0, 0, 1600],
+    [-1000, 0, 1300],
+    [-1000, 0, 900]
+]
+
+# [750,500,1200],
+#     [430, 110, 1500]
