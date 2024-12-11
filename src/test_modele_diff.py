@@ -3,7 +3,7 @@ from modele_differentiel import *
 from matrice_tn import *
 
 
-#juste pour tester othman donne la fonction après
+#juste pour tester othman donne la fonction après rempl
 def x(t):
     """
     Fonction x(t) définie pour tester le MDI.
