@@ -43,6 +43,6 @@ V1 = 10  # Vitesse 1 (par exemple)
 V2 = 20  # Vitesse 2 (par exemple)
 
 A = np.array([0, 0, 0])  # (par exemple)
-B = np.array([100, 100, 100])  # (par exemple)
+B = np.array([100, 0, 100])  # (par exemple)
 
 a = traj(A,B,V1,V2,Debug=True)
