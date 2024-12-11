@@ -1,5 +1,5 @@
 import numpy as np
-
+import time
 def calculer_jacobien(T_matrices, types_articulations):
     """
     Calcule le Jacobien d'un manipulateur à partir d'une liste de matrices de transformation 4x4.
@@ -42,6 +42,23 @@ def calculer_jacobien(T_matrices, types_articulations):
     J = np.vstack((J_P, J_O))
     
     return J
+
+
+def MDD(v,J) :
+    """
+    Return vitesses OT
+    parametre Vitesses articulaires, J jacobienne
+
+    """
+    return np.dot(J,v)
+
+
+def MDI(x,J):
+    """return q vitesse
+    param : x vitesse de l OT souhaitée , J jacobienne"""
+    return np.dot(np.linalg.pinv(J),x)
+
+
 
 
 
