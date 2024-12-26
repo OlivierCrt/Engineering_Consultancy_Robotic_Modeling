@@ -2,7 +2,8 @@ import plotly.graph_objects as go
 from const_v import *
 from matrice_tn import mgi
 
-def bras_rob_model3D_animation(Liaisons, Robot_pos, frames_per_transition=30, rayon_max1_5=1600):
+def bras_rob_model3D_animation(Liaisons, Robot_pos):
+    frames_per_transition = 30
     # Créer une semisphère
     def create_semisphere(rayon_max1_5, resolution=20):
         u = np.linspace(0, 2 * np.pi, resolution)
@@ -169,7 +170,7 @@ def bras_rob_model3D_animation(Liaisons, Robot_pos, frames_per_transition=30, ra
             buttons=[
                 dict(label="Animer",
                      method="animate",
-                     args=[None, {"frame": {"duration": 50, "redraw": True}, "fromcurrent": True}]),
+                     args=[None, {"frame": {"duration": 2, "redraw": True}, "fromcurrent": True}]),
                 dict(label="Pause",
                      method="animate",
                      args=[[None], {"frame": {"duration": 0, "redraw": False}, "mode": "immediate"}])
@@ -181,7 +182,7 @@ def bras_rob_model3D_animation(Liaisons, Robot_pos, frames_per_transition=30, ra
     fig.update_layout(scene_aspectmode='cube', scene=dict(
         xaxis=dict(title="Axe X", range=[-rayon_max1_5, rayon_max1_5]),
         yaxis=dict(title="Axe Y", range=[-rayon_max1_5, rayon_max1_5]),
-        zaxis=dict(title="Axe Z", range=[0, rayon_max1_5])
+        zaxis=dict(title="Axe Z", range=[0, 2*rayon_max1_5])
     ))
 
     # Afficher l'animation
