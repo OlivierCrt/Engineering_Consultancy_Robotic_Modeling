@@ -36,7 +36,7 @@ Xd = [800, 0, 600]
 
 # Pour modélisation 3D du bras robot
 Liaisons = {}
-"""Dans les listes on a les parametres horizontaux, verticaux et de profondeur, dans cette ordre"""
+"""Dans les listes on a les parametres horizontaux (X), verticaux (Z) et de profondeur (Y), dans cette ordre"""
 Liaisons["Liaison 1"] = [150, 550, 0]
 Liaisons["Liaison 2"] = [0, 825, 352]
 Liaisons["Liaison 3"] = [0, 735, 352]
@@ -50,6 +50,3 @@ Robot_pos=[
     [-1000, 0, 1300],
     [-1000, 0, 900]
 ]
-
-# [750,500,1200],
-#     [430, 110, 1500]
