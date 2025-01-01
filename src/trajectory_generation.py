@@ -1,8 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matrice_tn import *
-from const_v import Liaisons
+from scipy.interpolate import interp1d
 
+from matrice_tn import *
+from const_v import *
+from modele_differentiel import *
 
 def traj(A, B, V1, V2, Debug=False):
     """
@@ -14,7 +16,7 @@ def traj(A, B, V1, V2, Debug=False):
         V2 (float): Vitesse finale.
         Debug (bool): Affiche les détails pour le débogage.
     Returns:
-        tuple: (q, qp, qpp) Trajectoires articulaires, vitesses et accélérations.
+        tuple: (q, qp, positions) Trajectoires articulaires, vitesses et positions opérationnelles.
     """
     try:
         K = float(input("Quelle valeur d'accélération (K) voulez-vous appliquer ?\n"))
@@ -29,10 +31,7 @@ def traj(A, B, V1, V2, Debug=False):
     center = (A + B) / 2
     ray = np.linalg.norm(AB) / 2
 
-    # Trouver un vecteur non colinéaire à AB pour définir le plan
     arbitrary_vector = np.array([1, 0, 0]) if AB[2] != 0 else np.array([0, 0, 1])
-
-    # Produit vectoriel pour obtenir le vecteur normal
     normal = np.cross(AB, arbitrary_vector).astype(float)
     normal /= np.linalg.norm(normal)  # Normalisation
 
@@ -49,67 +48,114 @@ def traj(A, B, V1, V2, Debug=False):
 
     # Génération du temps
     time = np.linspace(0, tf, 1000)
-
-    # Profils de vitesse et accélération
     vitesse = np.piecewise(
         time,
         [time < t1, (time >= t1) & (time < t2), (time >= t2) & (time < t3), (time >= t3) & (time < t4), time >= t4],
-        [lambda t: K * t,  # Accélération
-         lambda t: V1,     # Vitesse constante à V1
-         lambda t: V1 + K * (t - t2),  # Accélération à V2
-         lambda t: V2,     # Vitesse constante à V2
-         lambda t: V2 - K * (t - t4)]  # Décélération
+        [lambda t: K * t,
+         lambda t: V1,
+         lambda t: V1 + K * (t - t2),
+         lambda t: V2,
+         lambda t: V2 - K * (t - t4)]
     )
 
     acceleration = np.piecewise(
-        time,
-        [time < t1, (time >= t1) & (time < t2), (time >= t2) & (time < t3), (time >= t3) & (time < t4), time >= t4],
-        [K,  # Accélération
-         0,  # Vitesse constante
-         K,  # Accélération
-         0,  # Vitesse constante
-         -K]  # Décélération
-    )
-    
+    time,
+    [time < t1, (time >= t1) & (time < t2), (time >= t2) & (time < t3), (time >= t3) & (time < t4), time >= t4],
+    [K,  # Accélération
+     0,  # Vitesse constante
+     K,  # Accélération
+     0,  # Vitesse constante
+     -K]  # Décélération
+)
+    #print(f"ACCEL = {acceleration}")
     s = np.cumsum(vitesse * (time[1] - time[0]))
 
-    # Calcul de theta(s) en fonction de s
-    theta = s / ray  # Relation entre s et l'angle paramétrique
-
-    # Calcul des positions en fonction de s(t)
+    theta = s / ray
     positions = np.array([
         center[0] + ray * (np.cos(theta) * u[0] + np.sin(theta) * v[0]),
         center[1] + ray * (np.cos(theta) * u[1] + np.sin(theta) * v[1]),
         center[2] + ray * (np.cos(theta) * u[2] + np.sin(theta) * v[2]),
     ]).T
 
+    # Conversion articulaire et vitesses
+    q, qp, xp, yp, zp = [], [], [], [], []
 
 
-    # Conversion en espace articulaire
-    q, qp, qpp = [], [], []
-    for pos in positions:
-        solutions = mgi(pos, Liaisons)
+    # Calcul des vitesses opérationnelles
+    delta_t = time[1:] - time[:-1]
+    velocities = (positions[1:, :] - positions[:-1, :]) / delta_t[:, np.newaxis]
+
+    # Interpolation pour aligner les vitesses avec les positions
+    interp_vel_x = interp1d(time[:-1], velocities[:, 0], kind='linear', fill_value="extrapolate")
+    interp_vel_y = interp1d(time[:-1], velocities[:, 1], kind='linear', fill_value="extrapolate")
+    interp_vel_z = interp1d(time[:-1], velocities[:, 2], kind='linear', fill_value="extrapolate")
+
+    xp = interp_vel_x(time)
+    yp = interp_vel_y(time)
+    zp = interp_vel_z(time)
+
+    # Calcul des accélérations opérationnelles
+    try:
+        acc_x = np.gradient(xp, time)
+        acc_y = np.gradient(yp, time)
+        acc_z = np.gradient(zp, time)
+    except Exception as e:
+        print(f"Erreur lors du calcul des gradients : {e}")
+        acc_x, acc_y, acc_z = np.zeros_like(xp), np.zeros_like(yp), np.zeros_like(zp)
+
+    # Vérifiez que acc_x, acc_y, acc_z ont la même taille que time
+    if len(acc_x) != len(time):
+        print(f"Dimensions mismatch detected: acc_x({len(acc_x)}) != time({len(time)})")
+        time_adjusted = np.linspace(0, tf, len(acc_x))
+    else:
+        time_adjusted = time
+
+    # Interpolation pour aligner les accélérations avec le vecteur temps original
+    interp_acc_x = interp1d(time_adjusted, acc_x, kind='linear', fill_value="extrapolate")
+    interp_acc_y = interp1d(time_adjusted, acc_y, kind='linear', fill_value="extrapolate")
+    interp_acc_z = interp1d(time_adjusted, acc_z, kind='linear', fill_value="extrapolate")
+
+    # Appliquer l'interpolation pour xpp, ypp et zpp
+    xpp = interp_acc_x(time)
+    ypp = interp_acc_y(time)
+    zpp = interp_acc_z(time)
+
+
+    for i, X in enumerate(positions):
+        solutions = mgi(X, Liaisons)
         if solutions:
-            q.append(solutions[0])
+            q_i = solutions[0]
+            q.append(q_i)
+
+            # Calcul de la matrice Jacobienne pour la configuration courante
+            T_matrices = t_mat(q_i, dh)
+            J = calculer_jacobien(T_matrices, dh['sigma_i'])
+            J_translation = J[:3, :]  # Jacobienne translationnelle
+
+            # Calcul des vitesses opérationnelles et articulaires
+            v_operational = np.array([xp[i], yp[i], zp[i]])
+            qp_i = MDI(v_operational, J_translation)  # Vitesses articulaires
+            qp.append(qp_i)
+
+            # Calcul des accélérations opérationnelles
+            acc_operational = np.array([xpp[i], ypp[i], zpp[i]])
+            #print(acc_operational)
+
+
+
         else:
-            print(f"Erreur : aucune solution MGI pour la position {pos}.")
-            return None
+            print(f"Erreur : MGI échoué pour X={X}")
+            q.append(None)
+            qp.append(None)
 
+    # Convertir les listes en tableaux numpy
     q = np.array(q)
-    dt = time[1] - time[0]
-    qp = np.gradient(q, axis=0, edge_order=2) / dt
-    qpp = np.gradient(qp, axis=0, edge_order=2) / dt
+    qp = np.array(qp)
 
-    # Calcul des vitesses et accélérations des points (opérationnel)
-    xp = np.gradient(positions[:, 0], time)
-    yp = np.gradient(positions[:, 1], time)
-    zp = np.gradient(positions[:, 2], time)
-    xpp = np.gradient(xp, time)
-    ypp = np.gradient(yp, time)
-    zpp = np.gradient(zp, time)
+
 
     if Debug:
-                # Trajectoire 3D
+        # Trajectoire 3D
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
         ax.plot(positions[:, 0], positions[:, 1], positions[:, 2], label="Trajectoire opérationnelle", color='b')
@@ -120,47 +166,56 @@ def traj(A, B, V1, V2, Debug=False):
         ax.set_ylabel("Y")
         ax.set_zlabel("Z")
         ax.legend()
-       
-        # Affichage des lois de mouvement temporel
+
+        # Lois de mouvement temporel
         plt.figure()
-        #plt.plot(time, s, label="s(t)")
+        plt.plot(time, s, label="s(t)")
         plt.plot(time, vitesse, label="s'(t)")
-        plt.plot(time, acceleration, label="s''(t)")
+        plt.plot(time, acceleration, label="s''(t)", color='r')
+        for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
+            plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
         plt.title("Lois de mouvement temporel")
         plt.xlabel("Temps (s)")
         plt.ylabel("Valeur")
         plt.legend()
         plt.grid()
 
-        # Affichage des trajectoires opérationnelles
+        # Trajectoires opérationnelles
         plt.figure()
         plt.plot(time, positions[:, 0], label="x(t)")
         plt.plot(time, positions[:, 1], label="y(t)")
         plt.plot(time, positions[:, 2], label="z(t)")
+        for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
+            plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
         plt.title("Trajectoire opérationnelle")
         plt.xlabel("Temps (s)")
         plt.ylabel("Coordonnées")
         plt.legend()
         plt.grid()
 
-        # Vitesses et accélérations opérationnelles
+        # Vitesses opérationnelles
         plt.figure()
         plt.plot(time, xp, label="x'(t)")
         plt.plot(time, yp, label="y'(t)")
         plt.plot(time, zp, label="z'(t)")
+        for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
+            plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
         plt.title("Vitesses opérationnelles")
         plt.xlabel("Temps (s)")
         plt.ylabel("Vitesses")
         plt.legend()
         plt.grid()
 
+            # Accélérations opérationnelles
         plt.figure()
         plt.plot(time, xpp, label="x''(t)")
         plt.plot(time, ypp, label="y''(t)")
         plt.plot(time, zpp, label="z''(t)")
+        for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
+            plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
         plt.title("Accélérations opérationnelles")
         plt.xlabel("Temps (s)")
-        plt.ylabel("Accélérations")
+        plt.ylabel("Accélération (mm/s²)")
         plt.legend()
         plt.grid()
 
@@ -169,12 +224,87 @@ def traj(A, B, V1, V2, Debug=False):
         plt.plot(time, q[:, 0], label="q1(t)")
         plt.plot(time, q[:, 1], label="q2(t)")
         plt.plot(time, q[:, 2], label="q3(t)")
+        for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
+            plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
         plt.title("Trajectoires articulaires")
         plt.xlabel("Temps (s)")
         plt.ylabel("Angles (°)")
         plt.legend()
         plt.grid()
 
+        # Vitesses articulaires avec marqueurs
+        plt.figure()
+        markers = ['o', 's', 'x', '^', 'v', '*']  # Liste de marqueurs
+        for joint in range(qp.shape[1]):
+            plt.plot(
+                time, 
+                qp[:, joint], 
+                label=f"q{joint+1}'(t)", 
+                marker=markers[joint % len(markers)],  # Marqueur cyclique
+                markevery=50  # Ajouter des marqueurs tous les 50 points
+            )
+        for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
+            plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
+        plt.title("Vitesses articulaires")
+        plt.xlabel("Temps (s)")
+        plt.ylabel("Vitesses articulaires (rad/s)")
+        plt.legend()
+        plt.grid()
+
         plt.show()
 
-    return q, qp, qpp
+
+    return q, qp
+
+
+def t_mat(q, dh):
+    """
+    Génère les matrices de transformation homogène pour une configuration articulaire donnée.
+    Args:
+        q (list): Configuration articulaire.
+        dh (dict): Paramètres DH.
+    Returns:
+        list of np.ndarray: Matrices de transformation homogène.
+    """
+    T_matrices = []
+
+    for i in range(len(dh['sigma_i'])):
+        t_i_ip1 = matrice_Tim1_Ti(q[i], dh["a_i_m1"][i], dh["alpha_i_m1"][i], dh["r_i"][i])
+        T_matrices.append(t_i_ip1)
+        #print(t_i_ip1)
+    return T_matrices
+
+def est_point_atteignable(point):
+    """
+    Vérifie si un point est atteignable par le robot en fonction de son espace opérationnel.
+
+    Args:
+        point (tuple): Coordonnées (x, y, z) du point à vérifier.
+
+    Returns:
+        bool: True si le point est atteignable, False sinon.
+        str: Message expliquant la raison si le point n'est pas atteignable.
+    """
+    x, y, z = point
+
+    # Extraire les longueurs des liaisons depuis le dictionnaire
+    longueur_bras = sum([np.linalg.norm(liaison) for liaison in Liaisons.values()])  # Norme 3D de chaque liaison
+    z_min = min([liaison[1] for liaison in Liaisons.values()])  # Hauteur minimale
+    z_max = max([liaison[1] for liaison in Liaisons.values()]) + longueur_bras  # Hauteur maximale atteignable
+    rayon_max = longueur_bras  # Rayon maximum atteint en projection 2D (xy)
+
+    # Calcul de la distance en projection 2D
+    rayon_xy = np.sqrt(x**2 + y**2)
+
+    # Vérifier les contraintes
+    if z < z_min or z > z_max:
+        return False, f"Le point est hors des limites verticales : {z_min} <= z <= {z_max}."
+    if rayon_xy > rayon_max:
+        return False, f"Le point est hors du rayon maximum atteignable dans le plan XY : r <= {rayon_max}."
+    
+    # Vérifier avec MGI
+    solutions = mgi(np.array([x, y, z]), Liaisons)
+    if not solutions:
+        return False, "Le MGI n'a trouvé aucune solution pour atteindre ce point."
+
+    return True, "Le point est atteignable."

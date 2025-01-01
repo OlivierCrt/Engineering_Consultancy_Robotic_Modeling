@@ -2,7 +2,7 @@ import numpy as np
 
 # Parametres de Denavit Hartenberg modifié
 dh = {}
-dh["sigma_i"] = [0, 0, 0, 0]
+dh["sigma_i"] = [0, 0, 0]
 dh["a_i_m1"] = [0, 150, 825, 735]
 dh["alpha_i_m1"] = [0, np.pi / 2, 0, 0]
 dh["r_i"] = [550, 0, 0, 0]
