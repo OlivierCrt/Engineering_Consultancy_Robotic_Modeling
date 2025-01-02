@@ -116,13 +116,13 @@ for i in range(len(dh['sigma_i'])):
 
 
 jacob =calculer_jacobien(T_matrices[:3] ,[0,0,0])
-print(jacob)
+print("Jacobienne:\n",jacob)
 
 vitesses_ot = MDD([100,100,100],jacob)
-print(vitesses_ot)
+print("\nVitesse ot:\n",vitesses_ot)
 
 vitesse_q =MDI(vitesses_ot , jacob)
-print(vitesse_q)
+print("\nVitesse q:\n",vitesse_q)
 
 
 def plot_mdi():

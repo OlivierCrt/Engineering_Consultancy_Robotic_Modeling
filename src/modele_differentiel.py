@@ -59,6 +59,3 @@ def MDI(x,J):
     return np.dot(np.linalg.pinv(J),x)
 
 
-
-
-

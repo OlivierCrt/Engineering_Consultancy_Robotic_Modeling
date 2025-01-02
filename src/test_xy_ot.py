@@ -42,8 +42,8 @@ print("\n")
 V1 = 10  # Vitesse 1 (par exemple)
 V2 = 20  # Vitesse 2 (par exemple)
 
-A = np.array([0, 0, 600])  # Ajusté pour respecter z_min
-B = np.array([0, 0, 700])  # Ajusté pour respecter z_min
+A = np.array([500, 0, 600])  # Ajusté pour respecter z_min
+B = np.array([500, 0, 900])  # Ajusté pour respecter z_min
 
 result_a, message_a = est_point_atteignable(A)
 result_b, message_b = est_point_atteignable(B)
@@ -51,6 +51,6 @@ result_b, message_b = est_point_atteignable(B)
 print(f"Point A: {message_a}")
 print(f"Point B: {message_b}")
 
-(q,qp,qpp) = traj(A,B,V1,V2,Debug=True)
+(q,qp) = traj(A,B,V1,V2,Debug=True)
 
 
