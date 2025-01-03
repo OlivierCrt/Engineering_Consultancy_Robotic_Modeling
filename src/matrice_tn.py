@@ -36,7 +36,7 @@ def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri):
 
 
 # mgd
-def matrice_Tn(dh, round_decimals=3, small_threshold=1e-6):
+def matrice_Tn(dh):
     """
     Calcule la matrice T0,n en utilisant les paramètres DH.
 
@@ -61,9 +61,6 @@ def matrice_Tn(dh, round_decimals=3, small_threshold=1e-6):
     for mat in mat_list:
         result_matrix = np.dot(result_matrix, mat)
 
-    # Arrondir la matrice résultante
-    result_matrix = np.round(result_matrix, round_decimals)
-    result_matrix[np.abs(result_matrix) < small_threshold] = 0
 
     # Configurer l'affichage pour éviter la notation scientifique et limiter à 1 décimale
     np.set_printoptions(precision=1, suppress=True, floatmode='fixed')
