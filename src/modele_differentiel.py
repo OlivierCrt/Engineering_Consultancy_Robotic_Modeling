@@ -14,35 +14,29 @@ def calculer_jacobien(T_matrices, types_articulations):
     np.ndarray
         Jacobien 6xN où N est le nombre d'articulations.
     """
-    n = len(T_matrices)  # Nombre d'articulations
+    import numpy as np
 
-    # Position de l'effecteur final
-    p_e = T_matrices[-1][:3, 3]  # Position de l'effecteur final (les trois premières lignes de la dernière colonne)
-    J_P = []  # Partie de translation du Jacobien
-    J_O = []  # Partie de rotation du Jacobien
-    # Calcul des colonnes du Jacobien pour chaque articulation
+    n = len(T_matrices)
+    T_0i = np.eye(4)  # Transformation cumulée initiale
+    p_e = T_matrices[-1][:3, 3]  # Position de l'effecteur final dans R0
+
+    J_P = np.zeros((3, n))
+    J_O = np.zeros((3, n))
+
     for i in range(n):
-        T_i = T_matrices[i]        # Matrice de transformation pour l'articulation i
-        p_i = T_i[:3, 3]           # Position de l'articulation i
-        z_i_1 = T_i[:3, 2]         # Axe z de la rotation pour l'articulation i (troisième colonne)
+        T_0i = T_0i @ T_matrices[i]  # Calcul cumulatif de la transformation
+        z_i_1 = T_0i[:3, 2]  # Axe Z dans R0
+        p_i = T_0i[:3, 3]  # Position dans R0
 
-        #prismatique et rotoïde
         if types_articulations[i] == 0:  # Articulation rotoïde
-            J_P_i = np.cross(z_i_1, p_e - p_i)
-            J_O_i = z_i_1
+            J_P[:, i] = np.cross(z_i_1, p_e - p_i)
+            J_O[:, i] = z_i_1
         else:  # Articulation prismatique
-            J_P_i = z_i_1
-            J_O_i = np.zeros(3)
-        J_P.append(J_P_i)
-        J_O.append(J_O_i)
-
-    J_P = np.array(J_P).T  # Transformer en une matrice 3xN
-    J_O = np.array(J_O).T  # Transformer en une matrice 3xN
+            J_P[:, i] = z_i_1
+            J_O[:, i] = np.zeros(3)
 
     J = np.vstack((J_P, J_O))
-    
     return J
-
 
 def MDD(v,J) :
     """
