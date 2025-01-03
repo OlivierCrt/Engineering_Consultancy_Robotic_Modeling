@@ -2,10 +2,10 @@ import sympy as sp
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Definir los símbolos para cosenos y senos
+# Définir les symboles pour les cosinus et sinus
 c1, s1, c2, s2, c3, s3, c4, s4 = sp.symbols('c1 s1 c2 s2 c3 s3 c4 s4')
 
-# Definir las matrices simbólicas
+# Définir les matrices symboliques
 matrix01 = sp.Matrix([
     [c1, -s1, 0, 0],
     [s1, c1,  0, 0],
@@ -27,136 +27,89 @@ matrix23 = sp.Matrix([
     [0,   0, 0, 1]
 ])
 
-# Calcular matrices de transformación acumuladas
-T_matrices = [matrix01, matrix01 * matrix12, matrix01 * matrix12 * matrix23]
-matrix02=matrix01 * matrix12
-matrix03=matrix01 * matrix12 * matrix23
-print("\n",matrix02)
-print("\n",matrix03,"\n")
+matrix3T = sp.Matrix([
+    [c4, 0, 0, 735],
+    [0,  c4, 0, 0],
+    [0,   0, 1, 0],
+    [0,   0, 0, 1]
+])
 
-# Función para calcular el Jacobiano
-def calculer_jacobien_sympy(T_matrices, types_articulations):
-    """
-    Calcule le Jacobien symbolique d'un manipulateur à partir d'une liste de matrices de transformation 4x4.
+# Calculer les matrices accumulées
+T_01 = matrix01
+T_02 = matrix01 * matrix12
+T_03 = T_02 * matrix23
+T_0T = T_03 * matrix3T
 
-    Paramètres:
-    T_matrices : list of sp.Matrix
-        Liste des matrices de transformation homogène 4x4 de chaque articulation jusqu'à l'effecteur final.
-    types_articulations : list of int
-        Liste des types d'articulations (0 pour rotoïde, 1 pour prismatique).
+# Obtenir z2, OT et O3
+z0 = T_01[:3, 2]
+z1 = T_02[:3, 2]  # Troisième colonne de T_02 (3 premières lignes)
+z2 = T_03[:3, 2]
+O1 = T_01[:3, 3]
+O2 = T_02[:3, 3]
+O3 = T_03[:3, 3]  # Quatrième colonne de T_03 (3 premières lignes)
+OT = T_0T[:3, 3]  # Quatrième colonne de T_0T (3 premières lignes)
 
-    Retourne:
-    sp.Matrix
-        Jacobien 6xN où N est le nombre d'articulations.
-    """
-    n = len(T_matrices)  # Nombre d'articulations
+# Calculer Jp3 = z2 x (OT - O3)
+Jp1 = z0.cross(OT - O1)
+Jp2 = z1.cross(OT - O2)
+Jp2_simp = sp.Matrix([-c1 * (735 * (c2 * s3 + c3 * s2) + 825 * s2), -s1 * (735 * (c2 * s3 + c3 * s2) + 825 * s2), 735 * (c2 * c3 - s2 * s3) + 825 * c2])
+Jp3 = z2.cross(OT - O3)
+Jp3_simp = sp.Matrix([-735 * c1 * (c2 * s3 + c3 * s2), -735 * s1 * (c2 * s3 + c3 * s2), 735 * (c2 * c3 + s2 * s3)])
 
-    # Position de l'effecteur final
-    p_e = T_matrices[-1][:3, 3]  # Position de l'effecteur final (les trois premières lignes de la dernière colonne)
-    J_P = []  # Partie de translation du Jacobien
-    J_O = []  # Partie de rotation du Jacobien
+# Afficher le résultat
+print("\nOT:")
+sp.pprint(OT)
+print("\nO1:")
+sp.pprint(O1)
+print("\nO2:")
+sp.pprint(O2)
+print("\nO3:")
+sp.pprint(O3)
+print("\nO1OT:")
+sp.pprint(OT - O1)
+print("\nO2OT:")
+sp.pprint(OT - O2)
+print("\nO3OT:")
+sp.pprint(OT - O3)
+print("\nz0:")
+sp.pprint(z0)
+print("\nz1:")
+sp.pprint(z1)
+print("\nz2:")
+sp.pprint(z2)
+print("\nJp1:")
+sp.pprint(Jp1)
+print("\nJp2:")
+sp.pprint(Jp2)
+print("\nJp2 simplifiée:")
+sp.pprint(Jp2_simp)
+print("\nJp3:")
+sp.pprint(Jp3)
+print("\nJp3 simplifiée:")
+sp.pprint(Jp3_simp)
 
-    # Calcul des colonnes du Jacobien pour chaque articulation
-    for i in range(n):
-        T_i = T_matrices[i]  # Matrice de transformation pour l'articulation i
-        p_i = T_i[:3, 3]  # Position de l'articulation i
-        z_i_1 = T_i[:3, 2]  # Axe z de la rotation pour l'articulation i (troisième colonne)
+# Construire la Jacobienne
+Jacobienne = sp.Matrix([
+    [Jp1[0], Jp2_simp[0], Jp3_simp[0]],
+    [Jp1[1], Jp2_simp[1], Jp3_simp[1]],
+    [Jp1[2], Jp2_simp[2], Jp3_simp[2]],
+    [z0[0],  z1[0],       z2[0]],
+    [z0[1],  z1[1],       z2[1]],
+    [z0[2],  z1[2],       z2[2]],
+])
 
-        if types_articulations[i] == 0:  # Articulation rotoïde
-            J_P_i = sp.Matrix.cross(z_i_1, p_e - p_i)
-            J_O_i = z_i_1
-        else:  # Articulation prismatique
-            J_P_i = z_i_1
-            J_O_i = sp.Matrix([0, 0, 0])
+# Afficher la Jacobienne
+print("\nJacobienne analytique, sans remplacer les cos et sin:")
+sp.pprint(Jacobienne)
 
-        J_P.append(J_P_i)
-        J_O.append(J_O_i)
+qifig = [0, 0, 0]
+subs_dict = {
+    c1: np.cos(qifig[0]), s1: np.sin(qifig[0]),
+    c2: np.cos(qifig[1]), s2: np.sin(qifig[1]),
+    c3: np.cos(qifig[2]), s3: np.sin(qifig[2]),
+}
 
-    # Combiner les parties translationnelle et rotationnelle
-    J_P = sp.Matrix.hstack(*J_P)  # Transformer en une matrice 3xN
-    J_O = sp.Matrix.hstack(*J_O)  # Transformer en une matrice 3xN
-
-    J = sp.Matrix.vstack(J_P, J_O)  # Combiner en une matrice 6xN
-
-    # Validar dimensiones
-    if J.shape != (6, n):
-        raise ValueError(f"Le Jacobien a une forme incorrecte : {J.shape}, attendu (6, {n})")
-
-    return J
-
-# Calcular el Jacobiano
-types_articulations = [0, 0, 0]  # Todas rotoïdes
-jacobien = calculer_jacobien_sympy(T_matrices, types_articulations)
-
-# Mostrar el resultado
-# sp.pprint(jacobien)
-
-"""Calcul dq1, dq2, dq3"""
-def MDI_analytique(vel):
-    angle_range = np.linspace(0, 2 * np.pi, 300)  # Ángulos de 0 a 2π
-    dq1_values = []
-    dq2_values = []
-    dq3_values = []
-    q1_values = []
-    q2_values = []
-
-    for q1 in angle_range:
-        for q2 in angle_range:
-            dq1 = vel[5]
-            if np.isclose(np.cos(q2), 0, atol=1e-6):  # Evitar división por cero
-                dq2 = np.nan
-            else:
-                dq2 = vel[2] / (825 * np.cos(q2))
-            if np.isclose(np.sin(q1), 0, atol=1e-6):  # Evitar división por cero
-                dq3 = np.nan
-            else:
-                dq3 = (vel[3] - np.sin(q1) * dq2) / np.sin(q1)
-
-            dq1_values.append(dq1)
-            dq2_values.append(dq2)
-            dq3_values.append(dq3)
-            q1_values.append(q1)
-            q2_values.append(q2)
-
-    # Crear gráficos
-    plt.figure(figsize=(15, 10))
-
-    # Graficar dq1
-    plt.subplot(3, 1, 1)
-    plt.scatter(q1_values, dq1_values, c='blue', s=10, alpha=0.7, label='dq1')
-    plt.xlabel('q1 (radianes)')
-    plt.ylabel('dq1')
-    plt.title('Evolución de dq1 respecto a q1')
-    plt.grid()
-    plt.legend()
-
-    # Graficar dq2
-    plt.subplot(3, 1, 2)
-    plt.scatter(q2_values, dq2_values, c='green', s=10, alpha=0.7, label='dq2')
-    plt.xlabel('q2 (radianes)')
-    plt.ylabel('dq2')
-    plt.title('Evolución de dq2 respecto a q2')
-    plt.grid()
-    plt.legend()
-
-    # Graficar dq3
-    plt.subplot(3, 1, 3)
-    plt.scatter(q1_values, dq3_values, c='red', s=10, alpha=0.7, label='dq3')
-    plt.xlabel('q1 (radianes)')
-    plt.ylabel('dq3')
-    plt.title('Evolución de dq3 respecto a q1')
-    plt.grid()
-    plt.legend()
-
-    # Mostrar gráficos
-    plt.tight_layout()
-    plt.show()
-
-# Valores de velocidad para la simulación
-vel = [0, 0, 10, 15, 0, 5]  # Ejemplo de velocidades
-
-# Calcular valores
-MDI_analytique(vel)
-
-
-
+# Remplacer dans la Jacobienne
+Jacobienne_numerique = Jacobienne.subs(subs_dict)
+print("\nJacobienne géométrique avec les angles qifig, q1=0, q2=0, q3=0:")
+sp.pprint(Jacobienne_numerique)
