@@ -5,8 +5,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+<<<<<<< HEAD
 #juste pour tester othman donne la fonction après rempl
 
+=======
+#juste pour tester, on donne la fonction après rempl
+>>>>>>> 9c84fb2c54b7d804ef294e8c3484e2fd8fb8674d
 def x(t):
     """
     Fonction x(t) définie pour tester le MDI dans le plan x-z.
@@ -33,15 +37,24 @@ def x(t):
 
 
 
+<<<<<<< HEAD
 
 def derivee_x(t):
     """
     Calcul de la dérivée de la fonction x(t) par rapport au temps t.
     Trajectoire circulaire dans le plan x-z.
+=======
+# Juste pour tester on donne la fonction après
+def x(t):
+    """
+    Fonction x(t) définie pour tester le MDI.
+    Trajectoire circulaire entre deux points dans un plan donné.
+>>>>>>> 9c84fb2c54b7d804ef294e8c3484e2fd8fb8674d
     """
     # Définir les points de départ et d'arrivée
     point_depart = np.array([800, 0, 600])
     point_arrivee = np.array([1400, 0, 600])
+<<<<<<< HEAD
 
     # Calcul du rayon et du centre du cercle
     centre = (point_depart + point_arrivee) / 2
@@ -54,6 +67,8 @@ def derivee_x(t):
 
     return np.array([d_x, d_y, d_z])
 # Juste pour tester othman donne la fonction après
+=======
+>>>>>>> 9c84fb2c54b7d804ef294e8c3484e2fd8fb8674d
 
 
 
@@ -88,13 +103,13 @@ for i in range(len(dh['sigma_i'])):
 
 
 jacob =calculer_jacobien(T_matrices[:3] ,[0,0,0])
-print(jacob)
+print("Jacobienne:\n",jacob)
 
 vitesses_ot = MDD([100,100,100],jacob)
-print(vitesses_ot)
+print("\nVitesse ot:\n",vitesses_ot)
 
 vitesse_q =MDI(vitesses_ot , jacob)
-print(vitesse_q)
+print("\nVitesse q:\n",vitesse_q)
 
 
 
