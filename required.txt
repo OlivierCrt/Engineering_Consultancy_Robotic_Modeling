@@ -1,3 +1,5 @@
 numpy
-scipy
-matplotlib
+matplotlib.pyplot
+plotly
+pybullet
+sympy
