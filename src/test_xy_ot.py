@@ -2,23 +2,15 @@ from matrice_tn import *
 from const_v import *
 import numpy as np
 from trajectory_generation import *
+from modele_differentiel import *
 
+# Afficher chaque matrice de transformation pour suivre le calcul et enregistrer dans une liste les matrices
+transformation_matrices = generate_transformation_matrices(dh, round_p=(2, 1e-6))
 
-# Afficher chaque transformation pour suivre le calcul
-for i in range(len(dh['sigma_i'])):
-    print(f"Transformation T({i},{i + 1}):\n")
-    t_i_ip1 = matrice_Tim1_Ti(dh["sigma_i"][i], dh["a_i_m1"][i], dh["alpha_i_m1"][i], dh["r_i"][i])
-    if round_p:
-        # Arrondi
-        t_i_ip1_rounded = np.round(t_i_ip1, round_p[0])
-        t_i_ip1_rounded[np.abs(t_i_ip1) < round_p[1]] = 0
-        print(f"{t_i_ip1_rounded}\n")
-
-# Calcul de la transformation complète T(0,3)
+# Calcul de la transformation complète T(0,4)
 print(f"Transformation T(0,{len(dh['sigma_i'])}) :\n")
 matrice_T0Tn = matrice_Tn(dh)
 print(f"{matrice_T0Tn}\n")
-
 
 # Pour ce TP Z0 représente l'axe vertical et Y0 celui de la profondeur
 print("\nCoordonnées finales grace a matrice T(0,n) en fonction de X0,Y0,Z0:\n", xy_Ot(matrice_T0Tn))
@@ -36,8 +28,41 @@ else:
 
 verifier_solutions(Xd, Liaisons)
 
+# Calcule de Jacobienne geometrique
+J_geo = Jacob_geo(transformation_matrices)
+print("\nJacobienne geométrique:")
+print(J_geo)
+
+# Calcule de Jacobienne analytique
+# Matrices sous forme analytique
+Mats = Mat_T_analytiques()
+Jacob_an = Jacob_analytique(Mats)
+print("\nJacobienne analytique:")
+sp.pprint(Jacob_an)
+
+# MDD pour dq1=0.1, dq2=0.2, dq3=0.3 appliqué à la position initiale q1=0, q2=0 et q3=0
+dq = [0.1, 0.3, 0.2]
+dX = MDD(dq, J_geo)
+dX_vert = np.array(dX).reshape(-1, 1)
+print("\nValeurs des vitesses linéaires et angulaires du robot pour sa position initiale lorsqu'on applique dq1 =",
+      dq[0], ", dq2 =", dq[1], ", dq3 =", dq[2])
+print(dX_vert)
+
+# Verification en utilisant MDI inversant la Jacobienne
+dq = MDI(dX, J_geo)
+dq_vert = np.array(dq).reshape(-1, 1)
+print("\nCalcul GEOMETRIQUE des valeurs des vitesses articulaires du robot pour sa position initiale lorsqu'on applique dx =", dX[0], ", dy=",
+      dX[1], ", dz=", dX[2], ", wx=", dX[3], ", wy=", dX[4], ", wz=", dX[5])
+print(dq_vert)
+
+dq=MDI_analytique(J_geo, dX, q_initial)
+dq_vert = np.array(dq).reshape(-1, 1)
+print("\nCalcul ANALYTIQUE des valeurs des vitesses articulaires du robot pour sa position initiale lorsqu'on applique dx =", dX[0], ", dy=",
+      dX[1], ", dz=", dX[2], ", wx=", dX[3], ", wy=", dX[4], ", wz=", dX[5])
+print(dq_vert)
+
 print("\n")
-#Genération de trajectoire
+# Genération de trajectoire
 # Test génération de trajectoire
 V1 = 10  # Vitesse 1 (par exemple)
 V2 = 20  # Vitesse 2 (par exemple)
@@ -51,6 +76,4 @@ result_b, message_b = est_point_atteignable(B)
 print(f"Point A: {message_a}")
 print(f"Point B: {message_b}")
 
-(q,qp) = traj(A,B,V1,V2,Debug=True)
-
-
+# (q, qp) = traj(A, B, V1, V2, Debug=True)
