@@ -4,11 +4,16 @@ import matplotlib.pyplot as plt
 
 def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri):
     """
-    Valeur unique qi
-    valeur unique ai-1
-    valeur unique alphai-1
-    valeur unique ri
-    return matrice Ti-1,i avec les éléments arrondis
+    Calcule la matrice de transformation DH entre deux liaisons successives.
+
+    Arguments :
+        qi : Angle de la liaison i (en radians).
+        ai_m1 : Longueur entre les axes des liaisons (en mm).
+        alphai_m1 : Angle entre les axes z_{i-1} et z_i (en radians).
+        ri : Décalage suivant z_i (en mm).
+
+    Retourne :
+        Matrice 4x4 de transformation DH.
     """
     matrix_res = np.zeros((4, 4))
 
@@ -34,66 +39,51 @@ def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri):
 
     return matrix_res
 
-def generate_transformation_matrices(dh, round_p=None):
+
+def generate_transformation_matrices(q, dh, round_p=None):
     """
-    Genera una lista de matrices de transformación T(i, i+1) a partir de los parámetros DH.
+    Génère une liste de matrices de transformation T(i, i+1) à partir des paramètres DH.
 
-    Args:
-        dh (dict): Diccionario con los parámetros de Denavit-Hartenberg.
-        round_p (tuple, optional): Si se proporciona, redondea los valores de las matrices.
-                                   (decimales, umbral para redondear a 0)
+    Arguments :
+        dh : Dictionnaire contenant les paramètres DH (a_i_m1, alpha_i_m1, r_i).
+        q : Liste des angles articulaires (en radians).
+        round_p : Tuple (nombre de décimales, seuil pour arrondir à 0).
 
-    Returns:
-        list: Lista de matrices de transformación T(i, i+1).
+    Retourne :
+        Liste de matrices 4x4 de transformation T(i, i+1).
     """
     transformation_matrices = []
 
-    for i in range(len(dh['sigma_i'])):
-        print(f"Transformation T({i},{i + 1}):\n")
-        # Calcular la matriz T(i, i+1)
-        t_i_ip1 = matrice_Tim1_Ti(dh["sigma_i"][i], dh["a_i_m1"][i], dh["alpha_i_m1"][i], dh["r_i"][i])
+    for i in range(len(dh['a_i_m1'])):
+        t_i_ip1 = matrice_Tim1_Ti(q[i], dh['a_i_m1'][i], dh['alpha_i_m1'][i], dh['r_i'][i])
 
-        # Aplicar redondeo si es necesario
         if round_p:
             t_i_ip1 = np.round(t_i_ip1, round_p[0])
             t_i_ip1[np.abs(t_i_ip1) < round_p[1]] = 0
 
-        # Añadir a la lista de matrices
         transformation_matrices.append(t_i_ip1)
-        print(f"{t_i_ip1}\n")
 
     return transformation_matrices
 
 
 # mgd
-def matrice_Tn(dh):
+def matrice_Tn(dh, q):
     """
-    Calcule la matrice T0,n en utilisant les paramètres DH.
+    Calcule la matrice T0,n en utilisant les paramètres DH et les angles q.
 
-    Arguments:
-    - dh: Dictionnaire contenant les paramètres DH
-    - round_decimals: Nombre de décimales pour l'arrondi (par défaut: 1)
-    - small_threshold: Seuil pour définir les valeurs très petites à zéro (par défaut: 1e-6)
+    Arguments :
+        dh : Dictionnaire contenant les paramètres DH.
+        q : Liste des angles articulaires (en radians).
 
-    Retourne:
-    - Matrice T0,n arrondie avec les valeurs affichées sans notation scientifique
+    Retourne :
+        Matrice T0,n (4x4).
     """
-    nbliaison = len(dh["sigma_i"])
-    mat_list = []
-
-    # Calculer la matrice pour chaque liaison
-    for i in range(nbliaison):
-        mat_temp = matrice_Tim1_Ti(dh["sigma_i"][i], dh["a_i_m1"][i], dh["alpha_i_m1"][i], dh["r_i"][i])
-        mat_list.append(mat_temp)
-
-    # Multiplier toutes les matrices pour obtenir T0,n
+    nbliaison = len(dh['a_i_m1'])
     result_matrix = np.eye(4)
-    for mat in mat_list:
-        result_matrix = np.dot(result_matrix, mat)
 
-
-    # Configurer l'affichage pour éviter la notation scientifique et limiter à 1 décimale
-    np.set_printoptions(precision=1, suppress=True, floatmode='fixed')
+    for i in range(nbliaison):
+        mat_temp = matrice_Tim1_Ti(q[i], dh['a_i_m1'][i], dh['alpha_i_m1'][i], dh['r_i'][i])
+        result_matrix = np.dot(result_matrix, mat_temp)
 
     return result_matrix
 
