@@ -8,7 +8,7 @@ from modele_differentiel import *
 
 def traj(A, B, V1, V2, Debug=False):
     """
-    Génère une trajectoire circulaire dans \( \mathbb{R}^3 \) entre deux points A et B.
+    Génère une trajectoire circulaire dans R^3 entre deux points A et B.
     Args:
         A (np.ndarray): Point de départ [x, y, z].
         B (np.ndarray): Point d'arrivée [x, y, z].
@@ -129,7 +129,7 @@ def traj(A, B, V1, V2, Debug=False):
 
             # Calcul de la matrice Jacobienne pour la configuration courante
             T_matrices = t_mat(q_i, dh)
-            J = calculer_jacobien(T_matrices, dh['sigma_i'])
+            J = Jacob_geo(T_matrices)
             J_translation = J[:3, :]  # Jacobienne translationnelle
 
             # Calcul des vitesses opérationnelles et articulaires
@@ -268,7 +268,7 @@ def t_mat(q, dh):
     """
     T_matrices = []
 
-    for i in range(len(dh['sigma_i'])):
+    for i in range(len(dh['sigma_i'])-1):
         t_i_ip1 = matrice_Tim1_Ti(q[i], dh["a_i_m1"][i], dh["alpha_i_m1"][i], dh["r_i"][i])
         T_matrices.append(t_i_ip1)
         #print(t_i_ip1)
