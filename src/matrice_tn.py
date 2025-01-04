@@ -34,6 +34,36 @@ def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri):
 
     return matrix_res
 
+def generate_transformation_matrices(dh, round_p=None):
+    """
+    Genera una lista de matrices de transformación T(i, i+1) a partir de los parámetros DH.
+
+    Args:
+        dh (dict): Diccionario con los parámetros de Denavit-Hartenberg.
+        round_p (tuple, optional): Si se proporciona, redondea los valores de las matrices.
+                                   (decimales, umbral para redondear a 0)
+
+    Returns:
+        list: Lista de matrices de transformación T(i, i+1).
+    """
+    transformation_matrices = []
+
+    for i in range(len(dh['sigma_i'])):
+        print(f"Transformation T({i},{i + 1}):\n")
+        # Calcular la matriz T(i, i+1)
+        t_i_ip1 = matrice_Tim1_Ti(dh["sigma_i"][i], dh["a_i_m1"][i], dh["alpha_i_m1"][i], dh["r_i"][i])
+
+        # Aplicar redondeo si es necesario
+        if round_p:
+            t_i_ip1 = np.round(t_i_ip1, round_p[0])
+            t_i_ip1[np.abs(t_i_ip1) < round_p[1]] = 0
+
+        # Añadir a la lista de matrices
+        transformation_matrices.append(t_i_ip1)
+        print(f"{t_i_ip1}\n")
+
+    return transformation_matrices
+
 
 # mgd
 def matrice_Tn(dh):
