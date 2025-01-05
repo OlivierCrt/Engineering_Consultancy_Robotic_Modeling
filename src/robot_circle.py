@@ -99,10 +99,10 @@ def bras_rob_model3D_animation(Liaisons, Robot_pos):
         solutions = mgi(target_pos, Liaisons)
         if not solutions:
             raise ValueError(f"Aucune solution trouvée pour la position cible : {target_pos}")
-        q1, q2, q3 = np.radians(solutions[1])  # Prendre la première solution et convertir en radians
+        q1, q2, q3 = solutions[1]  # Prendre la première solution
 
         # Calculer les positions intermédiaires du bras
-        L1, L2, L3 = Liaisons["Liaison 1"], Liaisons["Liaison 2"], Liaisons["Liaison 3"]
+        L1, L2, L3 = Liaisons[0], Liaisons[1], Liaisons[2]
         x1, y1, z1 = 0, 0, L1[1]
         x2, y2, z2 = L1[0] * np.cos(q1), L1[0] * np.sin(q1), z1
         x3, y3, z3 = x2 + L2[2] * np.cos(q1 + np.pi / 2), y2 + L2[2] * np.sin(q1 + np.pi / 2), z2
