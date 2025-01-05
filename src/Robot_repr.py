@@ -44,11 +44,11 @@ def generar_cilindro(p1, p2, radius=50, resolution=20):
     return x, y, z
 
 def bras_rob_model3D(Liaisons, q):
-    q_rad = np.radians(q)
+    q_rad = q
 
-    L1 = Liaisons["Liaison 1"]
-    L2 = Liaisons["Liaison 2"]
-    L3 = Liaisons["Liaison 3"]
+    L1 = Liaisons[0]
+    L2 = Liaisons[1]
+    L3 = Liaisons[2]
 
     # Angles
     teta1 = q_rad[0]
