@@ -123,7 +123,7 @@ def traj(A, B, V1, V2, Debug=False):
     for i, X in enumerate(positions):
         solutions = mgi(X, Liaisons)
         if solutions:
-            q_i = solutions[1]
+            q_i = solutions[0]
             q.append(q_i)
 
             # Calcul de la matrice Jacobienne pour la configuration courante

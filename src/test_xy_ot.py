@@ -2,7 +2,22 @@ from trajectory_generation import *
 from modele_differentiel import *
 
 # Afficher chaque matrice de transformation pour suivre le calcul et enregistrer dans une liste les matrices
-q = [0, 0, 0]
+
+
+Xd = [800, 0, 600]
+
+
+qu=float(input("Angle de liaison q1 en degrée :\n"))
+qd=float(input("Angle de liaison q2 en degrée :\n"))
+qt=float(input("Angle de liaison q3 en degrée :\n"))
+
+
+q = [qu,qd,qt]
+
+V1 = float(input("Vitesse 1 :\n"))  # Vitesse 1 (par exemple 10 )
+V2 = float(input("Vitesse 2 :\n"))  # Vitesse 2 (par exemple 20 )
+
+
 transformation_matrices = generate_transformation_matrices(q,dh, round_p=(2, 1e-6))
 print("Matrice de translation T01:\n",transformation_matrices[0])
 print("\nMatrice de translation T12:\n",transformation_matrices[1])
@@ -23,11 +38,6 @@ x_mgd = Xd_mgd[0]
 y_mgd = Xd_mgd[1]
 z_mgd = Xd_mgd[2]
 ray = round(np.sqrt(x_mgd ** 2 + y_mgd ** 2 + z_mgd ** 2), 2)
-if ray <= rayon_max1_5 and z_mgd >= 0 + 5:
-    print("Valeurs de q correctes, coordonnés finales (x,y,z): \n", Xd_mgd)
-else:
-    print("Valeurs de q incorrectes, dépasement du rayon de 1600 mm (rayon actuel= ", ray,
-          "mm) ou valeur de z négative, coordonnés finales (x,y,z): \n", Xd_mgd)
 
 verifier_solutions(Xd, Liaisons)
 
@@ -61,8 +71,7 @@ print(dq_vert)
 print("\n")
 # Genération de trajectoire
 # Test génération de trajectoire
-V1 = 10  # Vitesse 1 (par exemple)
-V2 = 20  # Vitesse 2 (par exemple)
+
 
 A = np.array([500, 0, 600])  # Ajusté pour respecter z_min
 B = np.array([500, 0, 900])  # Ajusté pour respecter z_min

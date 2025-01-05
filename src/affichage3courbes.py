@@ -37,4 +37,3 @@ def affichage3courbes(t, tim, f1, ref1, f2, ref2, f3, ref3):
     plt.tight_layout()
     plt.show()
     return
-##############################################

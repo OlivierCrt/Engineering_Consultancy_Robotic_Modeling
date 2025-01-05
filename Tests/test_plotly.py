@@ -154,9 +154,9 @@ def bras_rob_model3D_animation(A,B,V1,V2):
     fig.update_layout(
         scene_aspectmode='cube',
         scene=dict(
-            xaxis=dict(title="Axe X", range=[-rayon_max1_5, rayon_max1_5]),
-            yaxis=dict(title="Axe Y", range=[-rayon_max1_5, rayon_max1_5]),
-            zaxis=dict(title="Axe Z", range=[0, 2 * rayon_max1_5])
+            xaxis=dict(title="Axe X", range=[-2110, 2110]),
+            yaxis=dict(title="Axe Y", range=[-2110, 2110]),
+            zaxis=dict(title="Axe Z", range=[0, 2 * 2110])
         ),
         title="Animation 3D du Bras Robotique"
     )
@@ -164,10 +164,10 @@ def bras_rob_model3D_animation(A,B,V1,V2):
     # Afficher la figure
     fig.show()
 
-V1 = 300  # Vitesse 1 (par exemple)
-V2 = 400  # Vitesse 2 (par exemple)
+V1 = 3000  # Vitesse 1 (par exemple)
+V2 = 3000  # Vitesse 2 (par exemple)
 
-A = np.array([500, 0, 600])  # Ajusté pour respecter z_min
-B = np.array([500, 0, 900])  # Ajusté pour respecter z_min
+A = np.array([500, 0, 1200])  # Ajusté pour respecter z_min
+B = np.array([500, 0, 1900])  # Ajusté pour respecter z_min
 
 bras_rob_model3D_animation(A, B, V1, V2)

@@ -1,6 +1,11 @@
 import plotly.graph_objects as go
 from const_v import *
 
+
+
+
+
+q = [ 0,45 , -90]
 """FONTION POUR MODELISER EN 3D LE BRAS ROBOT, LA FONCTION EST DECLARE A LA TOUTE FIN"""
 
 def generar_cilindro(p1, p2, radius=50, resolution=20):
@@ -93,9 +98,9 @@ def bras_rob_model3D(Liaisons, q):
 
     # Configuration des axes
     fig.update_layout(scene_aspectmode='cube', scene=dict(
-        xaxis=dict(title="Axe X", range=[-rayon_max1_5, rayon_max1_5]),
-        yaxis=dict(title="Axe Y", range=[-rayon_max1_5, rayon_max1_5]),
-        zaxis=dict(title="Axe Z", range=[0, 2 * rayon_max1_5])
+        xaxis=dict(title="Axe X", range=[-2110, 2110]),
+        yaxis=dict(title="Axe Y", range=[-2110, 2110]),
+        zaxis=dict(title="Axe Z", range=[0, 2 * 2110])
     ))
 
     return fig.show()

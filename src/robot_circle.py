@@ -212,9 +212,9 @@ def bras_rob_model3D_animation(Liaisons, Robot_pos):
     fig.update_layout(
         scene_aspectmode='cube',
         scene=dict(
-            xaxis=dict(title="Axe X", range=[-rayon_max1_5, rayon_max1_5]),
-            yaxis=dict(title="Axe Y", range=[-rayon_max1_5, rayon_max1_5]),
-            zaxis=dict(title="Axe Z", range=[0, 2 * rayon_max1_5])
+            xaxis=dict(title="Axe X", range=[-2110, 2110]),
+            yaxis=dict(title="Axe Y", range=[-2110, 2110]),
+            zaxis=dict(title="Axe Z", range=[0, 2 * 2110])
         ),
         title="Animation 3D du Bras Robotique"
     )
@@ -223,6 +223,6 @@ def bras_rob_model3D_animation(Liaisons, Robot_pos):
     fig.show()
 
 A = [500, 0, 600]
-B = [500, 0, 900]
+B = [500, 0, 1600]
 Robot_pos = [A, B]
 bras_rob_model3D_animation(Liaisons, Robot_pos)
