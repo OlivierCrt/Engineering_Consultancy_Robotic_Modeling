@@ -70,11 +70,11 @@ def bras_rob_model3D_animation(Liaisons, Robot_pos):
     frames = []
 
     for angles in interpolated_angles:
-        q1, q2, q3 = np.radians(angles)  # Convertir les angles en radians
+        q1, q2, q3 = angles  # Convertir les angles en radians
 
-        L1 = Liaisons["Liaison 1"]
-        L2 = Liaisons["Liaison 2"]
-        L3 = Liaisons["Liaison 3"]
+        L1 = Liaisons[0]
+        L2 = Liaisons[1]
+        L3 = Liaisons[2]
 
         # Calculer les coordonnées intermédiaires pour le tracé 3D
         x1, y1, z1 = 0, 0, L1[1]
