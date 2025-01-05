@@ -6,6 +6,7 @@ from src.matrice_tn import *
 from src.const_v import *
 from src.modele_differentiel import *
 
+
 def traj(A, B, V1, V2, Debug=False):
     """
     Génère une trajectoire circulaire dans R^3 entre deux points A et B.
@@ -41,9 +42,9 @@ def traj(A, B, V1, V2, Debug=False):
 
     # Temps de transition
     t1 = V1 / K
-    t2 = t1 + (np.pi * ray - (V1**2 / (2 * K))) / V1
+    t2 = t1 + (np.pi * ray - (V1 ** 2 / (2 * K))) / V1
     t3 = t2 + (V2 - V1) / K
-    t4 = t3 + (np.pi * ray - (V2**2 / (2 * K))) / V2
+    t4 = t3 + (np.pi * ray - (V2 ** 2 / (2 * K))) / V2
     tf = t4 + V2 / K
 
     # Génération du temps
@@ -59,15 +60,15 @@ def traj(A, B, V1, V2, Debug=False):
     )
 
     acceleration = np.piecewise(
-    time,
-    [time < t1, (time >= t1) & (time < t2), (time >= t2) & (time < t3), (time >= t3) & (time < t4), time >= t4],
-    [K,  # Accélération
-     0,  # Vitesse constante
-     K,  # Accélération
-     0,  # Vitesse constante
-     -K]  # Décélération
-)
-    #print(f"ACCEL = {acceleration}")
+        time,
+        [time < t1, (time >= t1) & (time < t2), (time >= t2) & (time < t3), (time >= t3) & (time < t4), time >= t4],
+        [K,  # Accélération
+         0,  # Vitesse constante
+         K,  # Accélération
+         0,  # Vitesse constante
+         -K]  # Décélération
+    )
+    # print(f"ACCEL = {acceleration}")
     s = np.cumsum(vitesse * (time[1] - time[0]))
 
     theta = s / ray
@@ -79,7 +80,6 @@ def traj(A, B, V1, V2, Debug=False):
 
     # Conversion articulaire et vitesses
     q, qp, xp, yp, zp = [], [], [], [], []
-
 
     # Calcul des vitesses opérationnelles
     delta_t = time[1:] - time[:-1]
@@ -120,11 +120,10 @@ def traj(A, B, V1, V2, Debug=False):
     ypp = interp_acc_y(time)
     zpp = interp_acc_z(time)
 
-
     for i, X in enumerate(positions):
         solutions = mgi(X, Liaisons)
         if solutions:
-            q_i = solutions[0]
+            q_i = solutions[1]
             q.append(q_i)
 
             # Calcul de la matrice Jacobienne pour la configuration courante
@@ -139,7 +138,7 @@ def traj(A, B, V1, V2, Debug=False):
 
             # Calcul des accélérations opérationnelles
             acc_operational = np.array([xpp[i], ypp[i], zpp[i]])
-            #print(acc_operational)
+            # print(acc_operational)
 
 
 
@@ -151,8 +150,6 @@ def traj(A, B, V1, V2, Debug=False):
     # Convertir les listes en tableaux numpy
     q = np.array(q)
     qp = np.array(qp)
-
-
 
     if Debug:
         # Trajectoire 3D
@@ -206,7 +203,7 @@ def traj(A, B, V1, V2, Debug=False):
         plt.legend()
         plt.grid()
 
-            # Accélérations opérationnelles
+        # Accélérations opérationnelles
         plt.figure()
         plt.plot(time, xpp, label="x''(t)")
         plt.plot(time, ypp, label="y''(t)")
@@ -237,9 +234,9 @@ def traj(A, B, V1, V2, Debug=False):
         markers = ['o', 's', 'x', '^', 'v', '*']  # Liste de marqueurs
         for joint in range(qp.shape[1]):
             plt.plot(
-                time, 
-                qp[:, joint], 
-                label=f"q{joint+1}'(t)", 
+                time,
+                qp[:, joint],
+                label=f"q{joint + 1}'(t)",
                 marker=markers[joint % len(markers)],  # Marqueur cyclique
                 markevery=50  # Ajouter des marqueurs tous les 50 points
             )
@@ -253,9 +250,7 @@ def traj(A, B, V1, V2, Debug=False):
 
         plt.show()
 
-
-    return q, qp
-
+    return q, qp, positions, delta_t[0]
 
 
 def est_point_atteignable(point):
@@ -278,14 +273,14 @@ def est_point_atteignable(point):
     rayon_max = longueur_bras  # Rayon maximum atteint en projection 2D (xy)
 
     # Calcul de la distance en projection 2D
-    rayon_xy = np.sqrt(x**2 + y**2)
+    rayon_xy = np.sqrt(x ** 2 + y ** 2)
 
     # Vérifier les contraintes
     if z < z_min or z > z_max:
         return False, f"Le point est hors des limites verticales : {z_min} <= z <= {z_max}."
     if rayon_xy > rayon_max:
         return False, f"Le point est hors du rayon maximum atteignable dans le plan XY : r <= {rayon_max}."
-    
+
     # Vérifier avec MGI
     solutions = mgi(np.array([x, y, z]), Liaisons)
     if not solutions:
