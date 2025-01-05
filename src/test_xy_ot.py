@@ -1,19 +1,19 @@
-from matrice_tn import *
-from const_v import *
-import numpy as np
-
-from src.calcul_matrix import MDI_analytique
 from trajectory_generation import *
 from modele_differentiel import *
 
 # Afficher chaque matrice de transformation pour suivre le calcul et enregistrer dans une liste les matrices
 q = [0, 0, 0]
 transformation_matrices = generate_transformation_matrices(q,dh, round_p=(2, 1e-6))
+print("Matrice de translation T01:\n",transformation_matrices[0])
+print("\nMatrice de translation T12:\n",transformation_matrices[1])
+print("\nMatrice de translation T23:\n",transformation_matrices[2])
+print("\nMatrice de translation T34:\n",transformation_matrices[3])
 
 # Calcul de la transformation complète T(0,4)
-print(f"Transformation T(0,{len(dh['sigma_i'])}) :\n")
+print(f"\nMatrice de translation T0{len(dh['sigma_i'])} :")
 matrice_T0Tn = matrice_Tn(dh,q)
-print(f"{matrice_T0Tn}\n")
+matrice_T0Tn_rounded = np.round(matrice_T0Tn, decimals=0)
+print(matrice_T0Tn_rounded.astype(int))
 
 # Pour ce TP Z0 représente l'axe vertical et Y0 celui de la profondeur
 print("\nCoordonnées finales grace a matrice T(0,n) en fonction de X0,Y0,Z0:\n", xy_Ot(matrice_T0Tn))
@@ -34,8 +34,7 @@ verifier_solutions(Xd, Liaisons)
 # Calcule de Jacobienne geometrique
 J_geo = Jacob_geo(transformation_matrices)
 print("\nJacobienne geométrique:")
-print(J_geo)
-print(len(J_geo[0]))
+print(np.array2string(J_geo, formatter={'float_kind': lambda x: f"{x:7.1f}"}))
 # Calcule de Jacobienne analytique
 # Matrices sous forme analytique
 Mats = Mat_T_analytiques()
@@ -47,21 +46,15 @@ sp.pprint(Jacob_an)
 # MDD pour dq1=0.1, dq2=0.2, dq3=0.3 appliqué à la position initiale q1=0, q2=0 et q3=0
 dq = [0.1, 0.3, 0.2]
 dX = MDD(dq, J_geo)
-dX_vert = np.array(dX).reshape(-1, 1)
+dX_vert = sp.Matrix(np.round(np.array(dX).reshape(-1, 1), 1))
+
 print("\nValeurs des vitesses linéaires et angulaires du robot pour sa position initiale lorsqu'on applique dq1 =",
       dq[0], ", dq2 =", dq[1], ", dq3 =", dq[2])
-print(dX_vert)
-
+sp.pprint(dX_vert)
 # Verification en utilisant MDI inversant la Jacobienne
 dq = MDI(dX, J_geo)
 dq_vert = np.array(dq).reshape(-1, 1)
 print("\nCalcul GEOMETRIQUE des valeurs des vitesses articulaires du robot pour sa position initiale lorsqu'on applique dx =", dX[0], ", dy=",
-      dX[1], ", dz=", dX[2], ", wx=", dX[3], ", wy=", dX[4], ", wz=", dX[5])
-print(dq_vert)
-
-dq=MDI_analytique(J_geo, dX, q_initial)
-dq_vert = np.array(dq).reshape(-1, 1)
-print("\nCalcul ANALYTIQUE des valeurs des vitesses articulaires du robot pour sa position initiale lorsqu'on applique dx =", dX[0], ", dy=",
       dX[1], ", dz=", dX[2], ", wx=", dX[3], ", wy=", dX[4], ", wz=", dX[5])
 print(dq_vert)
 

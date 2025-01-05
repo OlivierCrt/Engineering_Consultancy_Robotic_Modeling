@@ -2,6 +2,7 @@ import numpy as np
 import sympy as sp
 import time
 
+
 def calculate_z_and_o(T):
     """
     Extrae el vector z y la posición o de una matriz de transformación homogénea.
@@ -10,7 +11,8 @@ def calculate_z_and_o(T):
     o = T[:3, 3]  # Cuarta columna (posición)
     return z, o
 
-def Jacob_geo(matrices,Debug =False):
+
+def Jacob_geo(matrices, Debug=False):
     if Debug:
         print("--- Débogage Jacobienne géométrique ---")
     T_01 = matrices[0]
@@ -51,7 +53,6 @@ def Jacob_geo(matrices,Debug =False):
     return J
 
 
-
 def Mat_T_analytiques():
     """
     Define las matrices simbólicas con placeholders para cosenos y senos.
@@ -60,39 +61,36 @@ def Mat_T_analytiques():
 
     T01 = sp.Matrix([
         [c1, -s1, 0, 0],
-        [s1,  c1, 0, 0],
-        [ 0,   0, 1, 550],
-        [ 0,   0, 0,   1]
+        [s1, c1, 0, 0],
+        [0, 0, 1, 550],
+        [0, 0, 0, 1]
     ])
 
     T12 = sp.Matrix([
-        [c2, -s2,  0, 150],
-        [ 0,   0, -1,   0],
-        [s2,  c2,  0,   0],
-        [ 0,   0,  0,   1]
+        [c2, -s2, 0, 150],
+        [0, 0, -1, 0],
+        [s2, c2, 0, 0],
+        [0, 0, 0, 1]
     ])
 
     T23 = sp.Matrix([
         [c3, -s3, 0, 825],
-        [s3,  c3, 0,   0],
-        [ 0,   0, 1,   0],
-        [ 0,   0, 0,   1]
+        [s3, c3, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
     ])
 
     T34 = sp.Matrix([
-        [c4,  0, 0, 735],
-        [ 0, c4, 0,   0],
-        [ 0,  0, 1,   0],
-        [ 0,  0, 0,   1]
+        [c4, 0, 0, 735],
+        [0, c4, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
     ])
 
     return T01, T12, T23, T34
 
 
-
-
-
-def Jacob_analytique(M, q=None):
+def Jacob_analytique(M, q=None, Debug=False):
     """
     Calcule la Jacobienne analytique en mode débogage.
     - Si `q` est fourni, la Jacobienne est calculée numériquement.
@@ -130,27 +128,45 @@ def Jacob_analytique(M, q=None):
     # Calcul des termes de la Jacobienne
     Jp1 = z0.cross(ot - o0)
     Jp2 = z1.cross(ot - o1)
+    Jp2_simp = 735 * c2 * c3 + 825 * c2 - 735 * s2 * s3
     Jp3 = z2.cross(ot - o2)
+    Jp3_simp = 735 * (c2 * c3 - s2 * s3)
 
     # Jacobienne complète
     J = sp.Matrix([
         [Jp1[0], Jp2[0], Jp3[0]],
         [Jp1[1], Jp2[1], Jp3[1]],
-        [Jp1[2], Jp2[2], Jp3[2]],
+        [Jp1[2], Jp2_simp, Jp3_simp],
         [z0[0], z1[0], z2[0]],
         [z0[1], z1[1], z2[1]],
         [z0[2], z1[2], z2[2]],
     ])
-
-    # Affichage en mode débogage
-    print("--- Débogage Jacobienne analytique ---")
-    print("z0 =", z0, ", o0 =", o0)
-    print("z1 =", z1, ", o1 =", o1)
-    print("z2 =", z2, ", o2 =", o2)
-    print("ot =", ot)
-    print("Jp1 =", Jp1, ", Jp2 =", Jp2, ", Jp3 =", Jp3)
-    print("Jacobienne analytique (symbolique) :\n", J)
-    print("--- Fin du débogage Jacobienne analytique ---")
+    if (Debug):
+        # Affichage en mode débogage
+        print("--- Débogage Jacobienne analytique ---")
+        print("z0 =")
+        sp.pprint(sp.Matrix(z0))
+        print("o0 =")
+        sp.pprint(sp.Matrix(o0))
+        print("z1 =")
+        sp.pprint(sp.Matrix(z1))
+        print("o1 =")
+        sp.pprint(sp.Matrix(o1))
+        print("z2 =")
+        sp.pprint(sp.Matrix(z2))
+        print("o2 =")
+        sp.pprint(sp.Matrix(o2))
+        print("ot =")
+        sp.pprint(sp.Matrix(ot))
+        print("Jp1 =")
+        sp.pprint(sp.Matrix(Jp1))
+        print("Jp2 =")
+        sp.pprint(sp.Matrix(Jp2))
+        print("Jp3 =")
+        sp.pprint(sp.Matrix(Jp3))
+        print("Jacobienne analytique (symbolique) :")
+        sp.pprint(J)
+        print("--- Fin du débogage Jacobienne analytique ---")
 
     # Si des valeurs numériques pour q sont fournies, calculer et retourner la Jacobienne numérique
     if q is not None:
@@ -167,21 +183,16 @@ def Jacob_analytique(M, q=None):
     return J
 
 
-
-
-def MDD(v,J) :
+def MDD(v, J):
     """
     Return vitesses OT
     parametre Vitesses articulaires, J jacobienne
 
     """
-    return np.dot(J,v)
+    return np.dot(J, v)
 
 
-def MDI(x,J):
+def MDI(x, J):
     """return q vitesse
     param : x vitesse de l OT souhaitée , J jacobienne"""
-    return np.dot(np.linalg.pinv(J),x)
-
-
-
+    return np.dot(np.linalg.pinv(J), x)

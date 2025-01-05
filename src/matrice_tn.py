@@ -48,7 +48,7 @@ def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, Debug=False):
 
 
 
-def generate_transformation_matrices(q, dh, round_p=None, Debug=False):
+def generate_transformation_matrices(q, dh, round_p, Debug=False):
     """
     Génère une liste de matrices de transformation T(i, i+1) à partir des paramètres DH.
 
@@ -276,18 +276,23 @@ def verifier_solutions(Xd, Liaisons):
     solutions = mgi(Xd, Liaisons)
 
     print("\nValeurs possibles des angles pour atteindre la configuration souhaitée Xd:", Xd)
-    print(solutions)
+    print(np.round(solutions[0],2))
+    print(np.round(solutions[1],2))
+    print(np.round(solutions[2],2))
+    print(np.round(solutions[3],2))
+
 
     # Itérer sur chaque combinaison d'angles et vérifier avec la fonction mgd
     for i, q in enumerate(solutions):
         # Calculer les coordonnées (x, y, z) en utilisant la fonction mgd avec les angles q
         Xd_mgd = mgd(q, Liaisons)
+        Xd_mgd=np.round(Xd_mgd,3)
 
         # Calculer l'erreur entre les coordonnées souhaitées et celles obtenues
         erreur = np.linalg.norm(Xd_mgd - Xd)
 
         # Afficher le résultat pour chaque ensemble d'angles
-        print(f"\nVérification de la solution {i + 1}: Angles = {q}")
+        print(f"\nVérification de la solution {i + 1}: Angles = {np.round(q,2)}")
         print(f"Coordonnées obtenues par MGD: {Xd_mgd}")
         print(f"Erreur par rapport à Xd: {np.round(erreur,3)}")
 
