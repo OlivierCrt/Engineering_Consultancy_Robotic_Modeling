@@ -35,11 +35,14 @@ Xd = [800, 0, 600]
 q_initial=[0,0,0]
 
 # Pour modélisation 3D du bras robot
-Liaisons = {}
+
 """Dans les listes on a les parametres horizontaux (X), verticaux (Z) et de profondeur (Y), dans cette ordre"""
-Liaisons["Liaison 1"] = [150, 550, 0]
-Liaisons["Liaison 2"] = [0, 825, 352]
-Liaisons["Liaison 3"] = [0, 735, 352]
+Liaisons = [
+    [150, 550, 0],  # Liaison 1
+    [0, 825, 352],  # Liaison 2
+    [0, 735, 352],  # Liaison 3
+]
+
 
 Robot_pos=[
     [500, 0, 600],
