@@ -1,15 +1,18 @@
 from matrice_tn import *
 from const_v import *
 import numpy as np
+
+from src.calcul_matrix import MDI_analytique
 from trajectory_generation import *
 from modele_differentiel import *
 
 # Afficher chaque matrice de transformation pour suivre le calcul et enregistrer dans une liste les matrices
-transformation_matrices = generate_transformation_matrices(dh, round_p=(2, 1e-6))
+q = [0, 0, 0]
+transformation_matrices = generate_transformation_matrices(q,dh, round_p=(2, 1e-6))
 
 # Calcul de la transformation complète T(0,4)
 print(f"Transformation T(0,{len(dh['sigma_i'])}) :\n")
-matrice_T0Tn = matrice_Tn(dh)
+matrice_T0Tn = matrice_Tn(dh,q)
 print(f"{matrice_T0Tn}\n")
 
 # Pour ce TP Z0 représente l'axe vertical et Y0 celui de la profondeur
@@ -32,13 +35,14 @@ verifier_solutions(Xd, Liaisons)
 J_geo = Jacob_geo(transformation_matrices)
 print("\nJacobienne geométrique:")
 print(J_geo)
-
+print(len(J_geo[0]))
 # Calcule de Jacobienne analytique
 # Matrices sous forme analytique
 Mats = Mat_T_analytiques()
 Jacob_an = Jacob_analytique(Mats)
 print("\nJacobienne analytique:")
 sp.pprint(Jacob_an)
+
 
 # MDD pour dq1=0.1, dq2=0.2, dq3=0.3 appliqué à la position initiale q1=0, q2=0 et q3=0
 dq = [0.1, 0.3, 0.2]
@@ -76,4 +80,4 @@ result_b, message_b = est_point_atteignable(B)
 print(f"Point A: {message_a}")
 print(f"Point B: {message_b}")
 
-# (q, qp) = traj(A, B, V1, V2, Debug=True)
+(q, qp) = traj(A, B, V1, V2, Debug=True)

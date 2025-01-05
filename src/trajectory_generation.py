@@ -128,7 +128,7 @@ def traj(A, B, V1, V2, Debug=False):
             q.append(q_i)
 
             # Calcul de la matrice Jacobienne pour la configuration courante
-            T_matrices = t_mat(q_i, dh)
+            T_matrices = generate_transformation_matrices(q_i, dh)
             J = Jacob_geo(T_matrices)
             J_translation = J[:3, :]  # Jacobienne translationnelle
 
@@ -257,22 +257,6 @@ def traj(A, B, V1, V2, Debug=False):
     return q, qp
 
 
-def t_mat(q, dh):
-    """
-    Génère les matrices de transformation homogène pour une configuration articulaire donnée.
-    Args:
-        q (list): Configuration articulaire.
-        dh (dict): Paramètres DH.
-    Returns:
-        list of np.ndarray: Matrices de transformation homogène.
-    """
-    T_matrices = []
-
-    for i in range(len(dh['sigma_i'])-1):
-        t_i_ip1 = matrice_Tim1_Ti(q[i], dh["a_i_m1"][i], dh["alpha_i_m1"][i], dh["r_i"][i])
-        T_matrices.append(t_i_ip1)
-        #print(t_i_ip1)
-    return T_matrices
 
 def est_point_atteignable(point):
     """
@@ -288,9 +272,9 @@ def est_point_atteignable(point):
     x, y, z = point
 
     # Extraire les longueurs des liaisons depuis le dictionnaire
-    longueur_bras = sum([np.linalg.norm(liaison) for liaison in Liaisons.values()])  # Norme 3D de chaque liaison
-    z_min = min([liaison[1] for liaison in Liaisons.values()])  # Hauteur minimale
-    z_max = max([liaison[1] for liaison in Liaisons.values()]) + longueur_bras  # Hauteur maximale atteignable
+    longueur_bras = sum([np.linalg.norm(liaison) for liaison in Liaisons])  # Norme 3D de chaque liaison
+    z_min = min([liaison[1] for liaison in Liaisons])  # Hauteur minimale
+    z_max = max([liaison[1] for liaison in Liaisons]) + longueur_bras  # Hauteur maximale atteignable
     rayon_max = longueur_bras  # Rayon maximum atteint en projection 2D (xy)
 
     # Calcul de la distance en projection 2D
