@@ -73,4 +73,4 @@ result_b, message_b = est_point_atteignable(B)
 print(f"Point A: {message_a}")
 print(f"Point B: {message_b}")
 
-(q, qp) = traj(A, B, V1, V2, Debug=True)
+(q, qp, pos, delta) = traj(A, B, V1, V2, Debug=True)

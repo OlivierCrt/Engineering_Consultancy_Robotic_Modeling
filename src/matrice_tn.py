@@ -48,7 +48,7 @@ def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, Debug=False):
 
 
 
-def generate_transformation_matrices(q, dh, round_p, Debug=False):
+def generate_transformation_matrices(q, dh, round_p=False, Debug=False):
     """
     Génère une liste de matrices de transformation T(i, i+1) à partir des paramètres DH.
 
