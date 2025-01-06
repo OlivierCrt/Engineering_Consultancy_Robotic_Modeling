@@ -2,9 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 
-from src.matrice_tn import *
-from src.const_v import *
-from src.modele_differentiel import *
+from matrice_tn import *
+from const_v import *
+from modele_differentiel import *
 
 
 
@@ -246,11 +246,24 @@ def traj(A, B, V1, V2, Debug=False):
     ypp = interp_acc_y(time)
     zpp = interp_acc_z(time)
 
+    prev_q = None  # Variable pour stocker la configuration précédente
+
     for i, X in enumerate(positions):
         solutions = mgi(X, Liaisons)
         if solutions:
-            q_i = solutions[0]
+            if prev_q is None:
+                # Si aucune configuration précédente, choisir arbitrairement la première solution
+                q_i = solutions[0]
+            else:
+                # Calculer les variations pour chaque solution
+                variations = [np.linalg.norm(np.array(solution) - np.array(prev_q)) for solution in solutions]
+                min_index = np.argmin(variations)  # Index de la solution avec la moindre variation
+                q_i = solutions[min_index]
+
             q.append(q_i)
+
+            # Mise à jour de la configuration précédente
+            prev_q = q_i
 
             # Calcul de la matrice Jacobienne pour la configuration courante
             T_matrices = generate_transformation_matrices(q_i, dh)
@@ -266,12 +279,11 @@ def traj(A, B, V1, V2, Debug=False):
             acc_operational = np.array([xpp[i], ypp[i], zpp[i]])
             # print(acc_operational)
 
-
-
         else:
             print(f"Erreur : MGI échoué pour X={X}")
             q.append(None)
             qp.append(None)
+
 
     # Convertir les listes en tableaux numpy
     q = np.array(q)
