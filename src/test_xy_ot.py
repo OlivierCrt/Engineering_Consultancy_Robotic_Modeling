@@ -73,8 +73,8 @@ print("\n")
 # Test génération de trajectoire
 
 
-A = np.array([500, 0, 600])  # Ajusté pour respecter z_min
-B = np.array([500, 0, 900])  # Ajusté pour respecter z_min
+A = np.array([0, 500, 600])  # Ajusté pour respecter z_min
+B = np.array([0, 500, 900])  # Ajusté pour respecter z_min
 
 result_a, message_a = est_point_atteignable(A)
 result_b, message_b = est_point_atteignable(B)
