@@ -164,10 +164,10 @@ def bras_rob_model3D_animation(A,B,V1,V2):
     # Afficher la figure
     fig.show()
 
-V1 = 3000  # Vitesse 1 (par exemple)
-V2 = 3000  # Vitesse 2 (par exemple)
+V1 = 100 # Vitesse 1 (par exemple)
+V2 = 500  # Vitesse 2 (par exemple)
 
-A = np.array([500, 0, 1200])  # Ajusté pour respecter z_min
-B = np.array([500, 0, 1900])  # Ajusté pour respecter z_min
+A = np.array([0, 500, 1200])  # Ajusté pour respecter z_min
+B = np.array([0, 500, 1900])  # Ajusté pour respecter z_min
 
 bras_rob_model3D_animation(A, B, V1, V2)

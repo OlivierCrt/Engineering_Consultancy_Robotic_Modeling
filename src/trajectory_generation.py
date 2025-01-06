@@ -30,22 +30,37 @@ def traj(A, B, V1, V2, Debug=False):
     # Vecteur directeur AB et point médian
     AB = B - A
     center = (A + B) / 2
-    ray = np.linalg.norm(AB) / 2
+    ray = np.linalg.norm(AB) / 2  # Rayon du cercle
 
-    arbitrary_vector = np.array([1, 0, 0]) if AB[2] != 0 else np.array([0, 0, 1])
-    normal = np.cross(AB, arbitrary_vector).astype(float)
-    normal /= np.linalg.norm(normal)  # Normalisation
+    # Assurer que le cercle est dans le plan ZY
+    center[0] = 0  # Fixe X à 0 pour rester dans le plan ZY
 
-    # Base locale du plan
-    u = AB / np.linalg.norm(AB)
-    v = np.cross(normal, u)
+    # Base locale pour le plan ZY
+    u = np.array([0, 0, 1])  # Direction dans Z
+    v = np.array([0, 1, 0])  # Direction dans Y
+
+
+
+
+
 
     # Temps de transition
     t1 = V1 / K
-    t2 = t1 + (np.pi * ray - (V1 ** 2 / (2 * K))) / V1
+    #t2 = t1 + (np.pi * ray - (V1 ** 2 / (2 * K))) / V1
+    t2 =(    (np.pi * ray) + V1*t1/2 - V1*(V2-V1)/K - ((V2-V1)/2)*((V2-V1)/K)   )/V1#o
     t3 = t2 + (V2 - V1) / K
     t4 = t3 + (np.pi * ray - (V2 ** 2 / (2 * K))) / V2
     tf = t4 + V2 / K
+
+
+   
+
+
+
+
+
+
+
 
     # Génération du temps
     time = np.linspace(0, tf, 1000)
@@ -54,9 +69,9 @@ def traj(A, B, V1, V2, Debug=False):
         [time < t1, (time >= t1) & (time < t2), (time >= t2) & (time < t3), (time >= t3) & (time < t4), time >= t4],
         [lambda t: K * t,
          lambda t: V1,
-         lambda t: V1 + K * (t - t2),
+         lambda t: V1 + K * (t - t2),#modif o
          lambda t: V2,
-         lambda t: V2 - K * (t - t4)]
+         lambda t: V2 - K * (t - t4)]#modif o
     )
 
     acceleration = np.piecewise(
@@ -68,6 +83,12 @@ def traj(A, B, V1, V2, Debug=False):
          0,  # Vitesse constante
          -K]  # Décélération
     )
+
+
+
+
+
+
     # print(f"ACCEL = {acceleration}")
     s = np.cumsum(vitesse * (time[1] - time[0]))
 
