@@ -1,5 +1,5 @@
-from trajectory_generation import *
-from modele_differentiel import *
+from src.trajectory_generation import *
+from src.modele_differentiel import *
 
 
 # Afficher chaque matrice de transformation pour suivre le calcul et enregistrer dans une liste les matrices
