@@ -1,7 +1,7 @@
 import numpy as np
 import plotly.graph_objects as go
-from src.const_v import *  # Assurez-vous qu'il contient vos constantes
-from src.matrice_tn import *  # Assurez-vous que `mgi` est correctement implémenté
+from src.const_v import *  
+from src.matrice_tn import * 
 from src.const_v import *
 from src.trajectory_generation import traj
 
