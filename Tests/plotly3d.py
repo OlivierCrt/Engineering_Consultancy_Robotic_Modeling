@@ -52,7 +52,7 @@ def bras_rob_model3D_animation(A,B,V1,V2):
     :param Liaisons: Dictionnaire contenant les dimensions des liaisons du bras.
     :param Robot_pos: Liste contenant deux points [A, B] qui définissent le cercle.
     """
-    q,qp, positions_cercle, dt = traj(A, B, V1, V2,Debug=True)
+    q,qp, positions_cercle, dt = traj(A, B, V1, V2,Debug=False)
     print(f"dt={dt}")
     # Initialiser les configurations du bras
     frames = []
@@ -163,11 +163,11 @@ def bras_rob_model3D_animation(A,B,V1,V2):
 
     # Afficher la figure
     fig.show()
-
+"""
 V1 = 100 # Vitesse 1 (par exemple)
 V2 = 500  # Vitesse 2 (par exemple)
 
 A = np.array([0, 500, 1200])  # Ajusté pour respecter z_min
 B = np.array([0, 500, 1900])  # Ajusté pour respecter z_min
 
-bras_rob_model3D_animation(A, B, V1, V2)
+bras_rob_model3D_animation(A, B, V1, V2)"""

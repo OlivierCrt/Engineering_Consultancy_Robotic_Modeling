@@ -7,6 +7,111 @@ from src.const_v import *
 from src.modele_differentiel import *
 
 
+
+
+def plot_3d_trajectory(positions, A, B, time):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot(positions[:, 0], positions[:, 1], positions[:, 2], label="Trajectoire opérationnelle", color='b')
+    ax.scatter(A[0], A[1], A[2], color='g', label="Point A (Départ)")
+    ax.scatter(B[0], B[1], B[2], color='r', label="Point B (Arrivée)")
+    ax.set_title("Trajectoire 3D")
+    ax.set_xlabel("X")
+    ax.set_ylabel("Y")
+    ax.set_zlabel("Z")
+    ax.legend()
+    plt.show()
+
+def plot_lois_de_mouvement(time, s, vitesse, acceleration, t1, t2, t3, t4):
+    plt.figure()
+    plt.plot(time, s, label="s(t)")
+    plt.plot(time, vitesse, label="s'(t)")
+    plt.plot(time, acceleration, label="s''(t)", color='r')
+    for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
+        plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
+    plt.title("Lois de mouvement temporel")
+    plt.xlabel("Temps (s)")
+    plt.ylabel("Valeur")
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+def plot_trajectoires_operationnelles(time, positions, t1, t2, t3, t4):
+    plt.figure()
+    plt.plot(time, positions[:, 0], label="x(t)")
+    plt.plot(time, positions[:, 1], label="y(t)")
+    plt.plot(time, positions[:, 2], label="z(t)")
+    for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
+        plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
+    plt.title("Trajectoire opérationnelle")
+    plt.xlabel("Temps (s)")
+    plt.ylabel("Coordonnées")
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+def plot_vitesses_operationnelles(time, xp, yp, zp, t1, t2, t3, t4):
+    plt.figure()
+    plt.plot(time, xp, label="x'(t)")
+    plt.plot(time, yp, label="y'(t)")
+    plt.plot(time, zp, label="z'(t)")
+    for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
+        plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
+    plt.title("Vitesses opérationnelles")
+    plt.xlabel("Temps (s)")
+    plt.ylabel("Vitesses")
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+def plot_accelerations_operationnelles(time, xpp, ypp, zpp, t1, t2, t3, t4):
+    plt.figure()
+    plt.plot(time, xpp, label="x''(t)")
+    plt.plot(time, ypp, label="y''(t)")
+    plt.plot(time, zpp, label="z''(t)")
+    for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
+        plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
+    plt.title("Accélérations opérationnelles")
+    plt.xlabel("Temps (s)")
+    plt.ylabel("Accélération (mm/s²)")
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+def plot_profils_articulaires(time, q, t1, t2, t3, t4):
+    plt.figure()
+    plt.plot(time, q[:, 0], label="q1(t)")
+    plt.plot(time, q[:, 1], label="q2(t)")
+    plt.plot(time, q[:, 2], label="q3(t)")
+    for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
+        plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
+    plt.title("Trajectoires articulaires")
+    plt.xlabel("Temps (s)")
+    plt.ylabel("Angles (°)")
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+def plot_vitesses_articulaires(time, qp, t1, t2, t3, t4):
+    plt.figure()
+    markers = ['o', 's', 'x', '^', 'v', '*']  # Liste de marqueurs
+    for joint in range(qp.shape[1]):
+        plt.plot(
+            time,
+            qp[:, joint],
+            label=f"q{joint + 1}'(t)",
+            marker=markers[joint % len(markers)],  # Marqueur cyclique
+            markevery=50  # Ajouter des marqueurs tous les 50 points
+        )
+    for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
+        plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
+    plt.title("Vitesses articulaires")
+    plt.xlabel("Temps (s)")
+    plt.ylabel("Vitesses articulaires (rad/s)")
+    plt.legend()
+    plt.grid()
+    plt.show()
+
 def traj(A, B, V1, V2, Debug=False):
     """
     Génère une trajectoire circulaire dans R^3 entre deux points A et B.
@@ -173,105 +278,17 @@ def traj(A, B, V1, V2, Debug=False):
     qp = np.array(qp)
 
     if Debug:
-        # Trajectoire 3D
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.plot(positions[:, 0], positions[:, 1], positions[:, 2], label="Trajectoire opérationnelle", color='b')
-        ax.scatter(A[0], A[1], A[2], color='g', label="Point A (Départ)")
-        ax.scatter(B[0], B[1], B[2], color='r', label="Point B (Arrivée)")
-        ax.set_title("Trajectoire 3D")
-        ax.set_xlabel("X")
-        ax.set_ylabel("Y")
-        ax.set_zlabel("Z")
-        ax.legend()
-
-        # Lois de mouvement temporel
-        plt.figure()
-        plt.plot(time, s, label="s(t)")
-        plt.plot(time, vitesse, label="s'(t)")
-        plt.plot(time, acceleration, label="s''(t)", color='r')
-        for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
-            plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
-        plt.title("Lois de mouvement temporel")
-        plt.xlabel("Temps (s)")
-        plt.ylabel("Valeur")
-        plt.legend()
-        plt.grid()
-
-        # Trajectoires opérationnelles
-        plt.figure()
-        plt.plot(time, positions[:, 0], label="x(t)")
-        plt.plot(time, positions[:, 1], label="y(t)")
-        plt.plot(time, positions[:, 2], label="z(t)")
-        for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
-            plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
-        plt.title("Trajectoire opérationnelle")
-        plt.xlabel("Temps (s)")
-        plt.ylabel("Coordonnées")
-        plt.legend()
-        plt.grid()
-
-        # Vitesses opérationnelles
-        plt.figure()
-        plt.plot(time, xp, label="x'(t)")
-        plt.plot(time, yp, label="y'(t)")
-        plt.plot(time, zp, label="z'(t)")
-        for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
-            plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
-        plt.title("Vitesses opérationnelles")
-        plt.xlabel("Temps (s)")
-        plt.ylabel("Vitesses")
-        plt.legend()
-        plt.grid()
-
-        # Accélérations opérationnelles
-        plt.figure()
-        plt.plot(time, xpp, label="x''(t)")
-        plt.plot(time, ypp, label="y''(t)")
-        plt.plot(time, zpp, label="z''(t)")
-        for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
-            plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
-        plt.title("Accélérations opérationnelles")
-        plt.xlabel("Temps (s)")
-        plt.ylabel("Accélération (mm/s²)")
-        plt.legend()
-        plt.grid()
-
-        # Profils articulaires
-        plt.figure()
-        plt.plot(time, q[:, 0], label="q1(t)")
-        plt.plot(time, q[:, 1], label="q2(t)")
-        plt.plot(time, q[:, 2], label="q3(t)")
-        for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
-            plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
-        plt.title("Trajectoires articulaires")
-        plt.xlabel("Temps (s)")
-        plt.ylabel("Angles (°)")
-        plt.legend()
-        plt.grid()
-
-        # Vitesses articulaires avec marqueurs
-        plt.figure()
-        markers = ['o', 's', 'x', '^', 'v', '*']  # Liste de marqueurs
-        for joint in range(qp.shape[1]):
-            plt.plot(
-                time,
-                qp[:, joint],
-                label=f"q{joint + 1}'(t)",
-                marker=markers[joint % len(markers)],  # Marqueur cyclique
-                markevery=50  # Ajouter des marqueurs tous les 50 points
-            )
-        for t_transition, label in zip([t1, t2, t3, t4], ['t1', 't2', 't3', 't4']):
-            plt.axvline(x=t_transition, color='r', linestyle='--', label=label)
-        plt.title("Vitesses articulaires")
-        plt.xlabel("Temps (s)")
-        plt.ylabel("Vitesses articulaires (rad/s)")
-        plt.legend()
-        plt.grid()
-
-        plt.show()
-
+        plot_3d_trajectory(positions, A, B, time)
+        plot_lois_de_mouvement(time, s, vitesse, acceleration, t1, t2, t3, t4)
+        plot_trajectoires_operationnelles(time, positions, t1, t2, t3, t4)
+        plot_vitesses_operationnelles(time, xp, yp, zp, t1, t2, t3, t4)
+        plot_accelerations_operationnelles(time, xpp, ypp, zpp, t1, t2, t3, t4)
+        plot_profils_articulaires(time, q, t1, t2, t3, t4)
+        plot_vitesses_articulaires(time, qp, t1, t2, t3, t4)
     return q, qp, positions, delta_t[0]
+
+
+
 
 
 def est_point_atteignable(point):
