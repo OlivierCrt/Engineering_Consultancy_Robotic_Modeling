@@ -1,11 +1,10 @@
 import plotly.graph_objects as go
-from const_v import *
+from src.const_v import *
 
 
 
 
 
-q = [ 0,45 , -90]
 """FONTION POUR MODELISER EN 3D LE BRAS ROBOT, LA FONCTION EST DECLARE A LA TOUTE FIN"""
 
 def generar_cilindro(p1, p2, radius=50, resolution=20):
@@ -49,7 +48,7 @@ def generar_cilindro(p1, p2, radius=50, resolution=20):
     return x, y, z
 
 def bras_rob_model3D(Liaisons, q):
-    q_rad = q
+    q_rad = np.radians(q)
 
     L1 = Liaisons[0]
     L2 = Liaisons[1]
@@ -104,7 +103,3 @@ def bras_rob_model3D(Liaisons, q):
     ))
 
     return fig.show()
-
-
-
-bras_rob_model3D(Liaisons, q)

@@ -1,4 +1,5 @@
 import numpy as np
+from src.Robot_repr import bras_rob_model3D
 import matplotlib.pyplot as plt
 
 
@@ -66,6 +67,7 @@ def generate_transformation_matrices(q, dh, round_p=False, Debug=False):
     # Copie locale de q pour éviter les effets secondaires
     q_local = q.copy()
     q_local.append(0)  # Ajouter un angle fixe pour la liaison finale
+    q_local=np.radians(q_local)
 
     if Debug:
         print("\n--- Début de generate_transformation_matrices ---")
@@ -118,6 +120,7 @@ def matrice_Tn(dh, q, Debug=False):
     # Copie locale de q pour éviter les effets secondaires
     q_local = q.copy()
     q_local.append(0)  # Ajouter un angle fixe pour la liaison finale
+    q_local=np.radians(q_local)
 
     nbliaison = len(dh['a_i_m1'])
     result_matrix = np.eye(4)
@@ -172,7 +175,7 @@ def mgd(q, Liaisons, Debug=False):
     L1, L2, L3 = Liaisons
 
     # Angles articulaires en radians
-    teta1, teta2, teta3 = q
+    teta1, teta2, teta3 = np.radians(q)
 
     # Contributions horizontales
     x1 = L1[0] * np.cos(teta1)
@@ -255,6 +258,7 @@ def mgi(Xd, Liaisons, Debug=False):
         c22 = (B1 * Z1 + B22 * Z2) / (B1 ** 2 + B22 ** 2)
         q22 = np.arctan2(s22, c22)
 
+
         if Debug:
             print(f"Debug: q21={q21}, q22={q22}")
 
@@ -276,27 +280,26 @@ def verifier_solutions(Xd, Liaisons):
     solutions = mgi(Xd, Liaisons)
 
     print("\nValeurs possibles des angles pour atteindre la configuration souhaitée Xd:", Xd)
-    print(np.round(solutions[0],2))
-    print(np.round(solutions[1],2))
-    print(np.round(solutions[2],2))
-    print(np.round(solutions[3],2))
-
+    for i, sol in enumerate(solutions):
+        print(f"Solution {i + 1} (en degrés) : {np.round(np.degrees(sol), 2)}")
 
     # Itérer sur chaque combinaison d'angles et vérifier avec la fonction mgd
-    for i, q in enumerate(solutions):
+    for i, q in enumerate(np.degrees(solutions)):
         # Calculer les coordonnées (x, y, z) en utilisant la fonction mgd avec les angles q
         Xd_mgd = mgd(q, Liaisons)
-        Xd_mgd=np.round(Xd_mgd,3)
+        Xd_mgd = np.round(Xd_mgd, 3)
 
         # Calculer l'erreur entre les coordonnées souhaitées et celles obtenues
         erreur = np.linalg.norm(Xd_mgd - Xd)
 
         # Afficher le résultat pour chaque ensemble d'angles
-        print(f"\nVérification de la solution {i + 1}: Angles = {np.round(q,2)}")
+        print(f"\nVérification de la solution {i + 1}:")
+        print(f"Angles (en degrés): {np.round(np.degrees(q), 2)}")
         print(f"Coordonnées obtenues par MGD: {Xd_mgd}")
-        print(f"Erreur par rapport à Xd: {np.round(erreur,3)}")
+        print(f"Erreur par rapport à la position désirée: {np.round(erreur, 6)}")
 
         if erreur < 0.1:  # Tolérance pour considérer que la solution est correcte
             print("Résultat : Correct !")
+            bras_rob_model3D(Liaisons, q)
         else:
             print("Résultat : Incorrect")
