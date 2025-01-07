@@ -138,13 +138,13 @@ def main_analyse():
     print("Pour un cercle avec les points A et B alignés sur l'axe Y veuillez introduire")
     zA = int(input("Coordonnée z du point A:"))
     zB = int(input("Coordonnée z du point B:"))
-    A = np.array([0, 500, zA])
-    B = np.array([0, 500, zB])
+    A = np.array([500, 100, zA])
+    B = np.array([500, 120, zB])
 
     result_a, message_a = est_point_atteignable(A)
     result_b, message_b = est_point_atteignable(B)
 
-    print(f"Point A: {message_a}")
-    print(f"Point B: {message_b}")
+    print(f"Point A: {message_a}",f"\nOn arrive aux coordonnées:{result_a}")
+    print(f"Point B: {message_b}",f"\nOn arrive aux coordonnées:{result_b}")
 
     main_analyse()

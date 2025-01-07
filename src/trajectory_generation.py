@@ -138,7 +138,7 @@ def traj(A, B, V1, V2, Debug=False):
     ray = np.linalg.norm(AB) / 2  # Rayon du cercle
 
     # Assurer que le cercle est dans le plan ZY
-    center[0] = 0  # Fixe X à 0 pour rester dans le plan ZY
+    center[0] = A[0]  # Fixe X à 0 pour rester dans le plan ZY
 
     # Base locale pour le plan ZY
     u = np.array([0, 0, 1])  # Direction dans Z
@@ -158,7 +158,7 @@ def traj(A, B, V1, V2, Debug=False):
     tf = t4 + V2 / K
 
 
-   
+
 
 
 

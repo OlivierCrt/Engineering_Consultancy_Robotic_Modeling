@@ -20,8 +20,8 @@ if __name__ == "__main__":
         if choix == "2" :
             V1 = float(input("Vitesse 1 :\n"))
             V2 = float(input("Vitesse 2 :\n"))
-            A = np.array([0, float(input("Coordonnée y pour A :\n")), float(input("Coordonnée z pour A :\n"))])
-            B = np.array([0, float(input("Coordonnée y pour B :\n")), float(input("Coordonnée z pour B :\n"))])
+            A = np.array([500, float(input("Coordonnée y pour A :\n")), float(input("Coordonnée z pour A :\n"))])
+            B = np.array([500, float(input("Coordonnée y pour B :\n")), float(input("Coordonnée z pour B :\n"))])
             traj(A,B,V1,V2,Debug=True)
             print("Voulez vous lancer une simulation avec ces données?")
             k = input("1: Oui 2: Non\n")
