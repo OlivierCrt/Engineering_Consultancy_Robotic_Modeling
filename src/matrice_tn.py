@@ -294,12 +294,11 @@ def verifier_solutions(Xd, Liaisons):
 
         # Afficher le résultat pour chaque ensemble d'angles
         print(f"\nVérification de la solution {i + 1}:")
-        print(f"Angles (en degrés): {np.round(np.degrees(q), 2)}")
+        print(f"Angles (en degrés): {np.round((q), 2)}")
         print(f"Coordonnées obtenues par MGD: {Xd_mgd}")
         print(f"Erreur par rapport à la position désirée: {np.round(erreur, 6)}")
 
         if erreur < 0.1:  # Tolérance pour considérer que la solution est correcte
             print("Résultat : Correct !")
-            bras_rob_model3D(Liaisons, q)
         else:
             print("Résultat : Incorrect")

@@ -170,6 +170,7 @@ def Jacob_analytique(M, q=None, Debug=False):
 
     # Si des valeurs numériques pour q sont fournies, calculer et retourner la Jacobienne numérique
     if q is not None:
+        q = np.radians(q)
         # Substituer les valeurs numériques de q dans les ci et si
         subs = {
             c1: np.cos(q[0]), s1: np.sin(q[0]),

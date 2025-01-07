@@ -12,14 +12,12 @@ def main_analyse():
 
     q = [qu, qd, qt]
 
-    V1 = float(input("Vitesse 1 :\n"))  # Vitesse 1 (par exemple 10 )
-    V2 = float(input("Vitesse 2 :\n"))  # Vitesse 2 (par exemple 20 )
-
-    transformation_matrices = generate_transformation_matrices(q, dh, round_p=(2, 1e-6))
-    print("Matrice de translation T01:\n", transformation_matrices[0])
-    print("\nMatrice de translation T12:\n", transformation_matrices[1])
-    print("\nMatrice de translation T23:\n", transformation_matrices[2])
-    print("\nMatrice de translation T34:\n", transformation_matrices[3])
+    transformation_matrices_calc = generate_transformation_matrices(q, dh, round_p=(5, 1e-6))
+    transformation_matrices_show = generate_transformation_matrices(q, dh, round_p=(2, 1e-6))
+    print("Matrice de translation T01:\n", transformation_matrices_show[0])
+    print("\nMatrice de translation T12:\n", transformation_matrices_show[1])
+    print("\nMatrice de translation T23:\n", transformation_matrices_show[2])
+    print("\nMatrice de translation T34:\n", transformation_matrices_show[3])
 
     # Calcul de la transformation complète T(0,4)
     print(f"\nMatrice de translation T0{len(dh['sigma_i'])} :")
@@ -29,7 +27,8 @@ def main_analyse():
 
     # Pour ce TP Z0 représente l'axe vertical et Y0 celui de la profondeur
     print("\nCoordonnées finales grace a matrice T(0,n) en fonction de X0,Y0,Z0:\n", xy_Ot(matrice_T0Tn))
-    rep = int(input("Vous voulez verifier ces valeurs avec la simulation du bras?? \n(1) pour 'oui', (2) pour 'non':"))
+    rep = int(
+        input("Vous voulez verifier ces valeurs avec une simulation 3D du bras?? \n(1) pour 'oui', (2) pour 'non':"))
     if rep == 1:
         bras_rob_model3D(Liaisons, q)
     else:
@@ -42,35 +41,53 @@ def main_analyse():
     z_mgd = Xd_mgd[2]
     print("x calculé par le MGD:", x_mgd, "\ny calculé par le MGD:", y_mgd, "\nz calculé par le MGD:", z_mgd, "\n")
     rep = int(input(
-        "Vous voulez verifier ces valeurs en les introduisant comme coordonnées de l'organe terminale? \n(1) pour 'oui', (2) pour 'non':"))
+        "Vous voulez verifier ces valeurs en les introduisant comme coordonnées de l'organe terminale et lui appliquant le MGI pour trouver les angles introduits au debut? \n(1) pour 'oui', (2) pour 'non, je met d'autres valeurs', (3) pour 'non, je continue', :"))
     if rep == 1:
         verifier_solutions(Xd_mgd, Liaisons)
-    else:
+        Rep=int(input("Est ce que vous voulez une représentation de la position du bras pour chaque configuration donnée?\n(1) pour 'oui', (2) pour 'non'"))
+        if Rep == 1:
+            sol = mgi(Xd_mgd, Liaisons)
+            for i, solution in enumerate(sol):  # Iterar sobre cada solución
+                bras_rob_model3D(Liaisons, np.degrees(solution))  # Convertir a grados antes de pasar
+            else:
+                pass
+    elif rep == 2:
         print("Veuillez introduire les coordonnées que vous désirés atteindre")
         x_mgi = float(input("Coordonnée x de l'organe terminale :\n"))
         y_mgi = float(input("Coordonnée y de l'organe terminale :\n"))
         z_mgi = float(input("Coordonnée z de l'organe terminale :\n"))
         Xd = [x_mgi, y_mgi, z_mgi]
         verifier_solutions(Xd, Liaisons)
+        Rep = int(input(
+            "Est ce que vous voulez une représentation de la position du bras pour chaque configuration donnée?\n(1) pour 'oui', (2) pour 'non'"))
+        if Rep == 1:
+            sol = mgi(Xd, Liaisons)
+            for i, solution in enumerate(sol):  # Iterar sobre cada solución
+                bras_rob_model3D(Liaisons, np.degrees(solution))  # Convertir a grados antes de pasar
+            else:
+                pass
+    else:
+        pass
 
     # Calcule de Jacobienne geometrique
     REP = int(
         input(
-            "Voulez-vous calculer la jacobienne du robot pour cette configuration? \n(1) pour 'oui', (2) pour 'non': :"))
+            f"Voulez-vous calculer la jacobienne du robot pour la configuration introduite au début ({q[0]}, {q[1]}, {q[2]})? \n(1) pour 'oui', (2) pour 'non': "
+        )
+    )
     if REP == 1:
-        J_geo = Jacob_geo(transformation_matrices)
+        J_geo = Jacob_geo(transformation_matrices_calc)
         print("\nJacobienne geométrique:")
         print(np.array2string(J_geo, formatter={'float_kind': lambda x: f"{x:7.1f}"}))
 
         # Calcule de Jacobienne analytique
         # Matrices sous forme analytique
-        # Mats = Mat_T_analytiques()
-        # Jacob_an = Jacob_analytique(Mats)
+        # Jacob_an = Jacob_analytique(Mat_T_analytiques())
         # print("\nJacobienne analytique:")
         # sp.pprint(Jacob_an)
 
         # MDD pour dq1=0.1, dq2=0.2, dq3=0.3 appliqué à la position initiale q1=0, q2=0 et q3=0
-        print("Veuillez introduire les vitesse articulaires que vous souhaitez donner au robot :\n")
+        print("\nVeuillez introduire les vitesse articulaires que vous souhaitez donner au robot :")
         dq1 = float(input("dq1:\n"))
         dq2 = float(input("dq2:\n"))
         dq3 = float(input("dq3:\n"))
@@ -94,7 +111,7 @@ def main_analyse():
                 dX[1], ", dz=", dX[2], ", wx=", dX[3], ", wy=", dX[4], ", wz=", dX[5])
             print(dq_vert)
         elif rep == 2:
-            print("Veuillez introduire les 6 valeurs suivantes")
+            print("\nVeuillez introduire les 6 valeurs suivantes")
             dx = float(input("dx="))
             dy = float(input("dy="))
             dz = float(input("dz="))
@@ -117,7 +134,6 @@ def main_analyse():
         pass
     # Genération de trajectoire
     # Test génération de trajectoire
-
 
     print("Pour un cercle avec les points A et B alignés sur l'axe Y veuillez introduire")
     zA = int(input("Coordonnée z du point A:"))
