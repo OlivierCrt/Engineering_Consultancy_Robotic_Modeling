@@ -132,13 +132,15 @@ def traj(A, B, V1, V2, Debug=False):
         print(f"Erreur : {e}")
         return None
 
+    if Debug:
+        print(f"A = {A} B = {B} V1 = {V1} V2 = {V2}")
+
     # Vecteur directeur AB et point médian
-    AB = B - A
-    center = (A + B) / 2
-    ray = np.linalg.norm(AB) / 2  # Rayon du cercle
+    center_y = (A[1] + B[1]) / 2
+    center_z = (A[2] + B[2]) / 2
+    ray = np.sqrt((B[1] - center_y) ** 2 + (B[2] - center_z) ** 2)
 
     # Assurer que le cercle est dans le plan ZY
-    center[0] = A[0]  # Fixe X à 0 pour rester dans le plan ZY
 
     # Base locale pour le plan ZY
     u = np.array([0, 0, 1])  # Direction dans Z
@@ -197,11 +199,15 @@ def traj(A, B, V1, V2, Debug=False):
     # print(f"ACCEL = {acceleration}")
     s = np.cumsum(vitesse * (time[1] - time[0]))
 
-    theta = s / ray
+    # Calcul de l'angle initial
+    theta0 = np.arctan2(A[2] - center_z, A[1] - center_y)
+
+    theta = s / ray + theta0
+
     positions = np.array([
-        center[0] + ray * (np.cos(theta) * u[0] + np.sin(theta) * v[0]),
-        center[1] + ray * (np.cos(theta) * u[1] + np.sin(theta) * v[1]),
-        center[2] + ray * (np.cos(theta) * u[2] + np.sin(theta) * v[2]),
+        np.full_like(theta, A[0]),  # x constant
+        center_y + ray * np.cos(theta),  # y
+        center_z + ray * np.sin(theta)  # z
     ]).T
 
     # Conversion articulaire et vitesses
@@ -245,7 +251,8 @@ def traj(A, B, V1, V2, Debug=False):
     xpp = interp_acc_x(time)
     ypp = interp_acc_y(time)
     zpp = interp_acc_z(time)
-
+    if Debug:
+        print(f"pos init {positions[0]} pos final {positions[-1]}")
     prev_q = None  # Variable pour stocker la configuration précédente
 
     for i, X in enumerate(positions):
