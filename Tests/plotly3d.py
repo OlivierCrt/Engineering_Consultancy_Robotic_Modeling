@@ -5,6 +5,63 @@ from src.matrice_tn import *
 from src.const_v import *
 from src.trajectory_generation import traj
 
+def ajouter_sol(fig):
+    """
+    Ajoute un sol couvrant tout le plan XY entre z = -1010 et z = -2110.
+    """
+    # Définir les coins du sol aux deux niveaux
+    coins_sup = [
+        [-2110, -2110, -1010],
+        [-2110, 2110, -1010],
+        [2110, 2110, -1010],
+        [2110, -2110, -1010],
+    ]
+    coins_inf = [
+        [-2110, -2110, -2110],
+        [-2110, 2110, -2110],
+        [2110, 2110, -2110],
+        [2110, -2110, -2110],
+    ]
+
+    # Points combinés pour le Mesh3d
+    vertices = coins_sup + coins_inf
+    x = [v[0] for v in vertices]
+    y = [v[1] for v in vertices]
+    z = [v[2] for v in vertices]
+
+    # Définir les faces du sol
+    # Faces supérieures et inférieures (deux rectangles, divisés en deux triangles chacun)
+    faces = [
+        [0, 1, 2], [0, 2, 3],  # Face supérieure (z = -1010)
+        [4, 5, 6], [4, 6, 7],  # Face inférieure (z = -2110)
+        # Faces latérales
+        [0, 1, 5], [0, 5, 4],  # Côté 1
+        [1, 2, 6], [1, 6, 5],  # Côté 2
+        [2, 3, 7], [2, 7, 6],  # Côté 3
+        [3, 0, 4], [3, 4, 7],  # Côté 4
+    ]
+
+    # Extraire les indices pour i, j, k
+    i = [f[0] for f in faces]
+    j = [f[1] for f in faces]
+    k = [f[2] for f in faces]
+
+    # Ajouter le sol à la figure
+    fig.add_trace(go.Mesh3d(
+        x=x,
+        y=y,
+        z=z,
+        i=i,
+        j=j,
+        k=k,
+        color='gray',
+        opacity=1,
+        showlegend=False
+    ))
+
+    return fig
+
+
 def generer_cylindre(p1, p2, radius=50, resolution=20):
     """
     Génère les coordonnées d'un cylindre entre deux points 3D.
@@ -177,7 +234,7 @@ def bras_rob_model3D_animation(A,B,V1,V2,K):
     )
 
     fig = ajouter_table(fig)
-    frames.append(go.Frame(data=fig.data))
+    fig = ajouter_sol(fig)
 
     # Configurer les boutons de lecture
     fig.update_layout(
@@ -194,7 +251,7 @@ def bras_rob_model3D_animation(A,B,V1,V2,K):
             ]
         )]
     )
-
+    #1010
     # Configurer le design du graphique
     fig.update_layout(
         scene_aspectmode='cube',
