@@ -89,7 +89,7 @@ Solution 2 :
 Ajouter le dossier principal à vos variables d’environnement (dépendant de votre OS).
 
 
-###Entrées attendues
+### 4. Entrées attendues
 Unités :
 Vitesses linéaires : mm/s
 Vitesses angulaires : rad/s
