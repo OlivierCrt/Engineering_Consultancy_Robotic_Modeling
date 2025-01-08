@@ -131,5 +131,3 @@ def main_analyse():
         print("\n")
     else:
         pass
-
-    main_analyse()
