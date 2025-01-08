@@ -23,8 +23,12 @@ if __name__ == "__main__":
             x=float(input("Coordonnée x partagé par A et B :\n"))
             A = np.array([x, float(input("Coordonnée y pour A :\n")), float(input("Coordonnée z pour A :\n"))])
             B = np.array([x, float(input("Coordonnée y pour B :\n")), float(input("Coordonnée z pour B :\n"))])
-            traj(A,B,V1,V2,Debug=True)
+            K = float(input("Acceleration :\n"))
+            while K <= 0.0:
+                print("L'accéleleration doit etre positive ! Entrez une acceleration positive.")
+                K = float(input("Acceleration :\n"))
+            traj(A,B,V1,V2,K, Debug=True)
             print("Voulez vous lancer une simulation avec ces données?")
             k = input("1: Oui 2: Non\n")
             if k == "1" :
-                bras_rob_model3D_animation(A,B,V1,V2)
+                bras_rob_model3D_animation(A,B,V1,V2,K)

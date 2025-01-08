@@ -112,7 +112,7 @@ def plot_vitesses_articulaires(time, qp, t1, t2, t3, t4):
     plt.grid()
     plt.show()
 
-def traj(A, B, V1, V2, Debug=False):
+def traj(A, B, V1, V2,K, Debug=False):
     """
     Génère une trajectoire circulaire dans R^3 entre deux points A et B.
     Args:
@@ -124,13 +124,7 @@ def traj(A, B, V1, V2, Debug=False):
     Returns:
         tuple: (q, qp, positions) Trajectoires articulaires, vitesses et positions opérationnelles.
     """
-    try:
-        K = float(input("Quelle valeur d'accélération (K) voulez-vous appliquer ?\n"))
-        if K <= 0:
-            raise ValueError("L'accélération K doit être positive.")
-    except ValueError as e:
-        print(f"Erreur : {e}")
-        return None
+
 
     if Debug:
         print(f"A = {A} B = {B} V1 = {V1} V2 = {V2}")

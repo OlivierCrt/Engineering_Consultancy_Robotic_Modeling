@@ -45,14 +45,14 @@ def generer_cylindre(p1, p2, radius=50, resolution=20):
 
     return x, y, z
 
-def bras_rob_model3D_animation(A,B,V1,V2):
+def bras_rob_model3D_animation(A,B,V1,V2,K):
     """
     Anime un bras robotique suivant une trajectoire circulaire définie par deux points (A et B).
 
     :param Liaisons: Dictionnaire contenant les dimensions des liaisons du bras.
     :param Robot_pos: Liste contenant deux points [A, B] qui définissent le cercle.
     """
-    q,qp, positions_cercle, dt = traj(A, B, V1, V2,Debug=False)
+    q,qp, positions_cercle, dt = traj(A, B, V1,K, V2,Debug=False)
     print(f"dt={dt}")
     # Initialiser les configurations du bras
     frames = []
@@ -106,7 +106,7 @@ def bras_rob_model3D_animation(A,B,V1,V2):
                 z=[A[2], B[2]],
                 mode='markers+text',
                 marker=dict(size=6, color=['green', 'red'], symbol='cross'),
-                text=['B', 'A'],
+                text=['A', 'B'],
                 textposition='top center',
                 showlegend=False
             ),
