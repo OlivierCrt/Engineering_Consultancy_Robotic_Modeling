@@ -164,7 +164,9 @@ def traj(A, B, V1, V2,K, Debug=False):
 
 
     # Génération du temps
-    time = np.linspace(0, tf, 1000)
+    dt = 5/1000
+    N = int (tf/dt)
+    time = np.linspace(0, tf, N)
     vitesse = np.piecewise(
         time,
         [time < t1, (time >= t1) & (time < t2), (time >= t2) & (time < t3), (time >= t3) & (time < t4), time >= t4],
