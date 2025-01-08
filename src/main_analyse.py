@@ -82,9 +82,9 @@ def main_analyse():
 
         # Calcule de Jacobienne analytique
         # Matrices sous forme analytique
-        Jacob_an = Jacob_analytique(q)
-        print("\nJacobienne analytique:")
-        sp.pprint(Jacob_an)
+        # Jacob_an = Jacob_analytique(q)
+        # print("\nJacobienne analytique:")
+        # sp.pprint(Jacob_an)
 
         # MDD pour dq1=0.1, dq2=0.2, dq3=0.3 appliqué à la position initiale q1=0, q2=0 et q3=0
         print("\nVeuillez introduire les vitesse articulaires que vous souhaitez donner au robot :")
