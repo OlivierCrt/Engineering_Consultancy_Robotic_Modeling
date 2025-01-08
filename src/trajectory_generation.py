@@ -164,7 +164,10 @@ def traj(A, B, V1, V2,K, Debug=False):
 
 
     # Génération du temps
-    time = np.linspace(0, tf, 1000)
+
+    dt = 5/1000
+    N = int (tf/dt)
+    time = np.linspace(0, tf, N)
     vitesse = np.piecewise(
         time,
         [time < t1, (time >= t1) & (time < t2), (time >= t2) & (time < t3), (time >= t3) & (time < t4), time >= t4],
@@ -254,7 +257,7 @@ def traj(A, B, V1, V2,K, Debug=False):
         if solutions:
             if prev_q is None:
                 # Si aucune configuration précédente, choisir arbitrairement la première solution
-                q_i = solutions[0]
+                q_i = solutions[1]
             else:
                 # Calculer les variations pour chaque solution
                 variations = [np.linalg.norm(np.array(solution) - np.array(prev_q)) for solution in solutions]

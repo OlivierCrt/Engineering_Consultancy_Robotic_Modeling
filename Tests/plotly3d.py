@@ -45,6 +45,49 @@ def generer_cylindre(p1, p2, radius=50, resolution=20):
 
     return x, y, z
 
+def ajouter_table(fig):
+    # Coins de la table (plateau)
+    coins = [
+        [-200, -200, 0],  # Coin 1
+        [-200, 200, 0],   # Coin 2
+        [200, 200, 0],    # Coin 3
+        [200, -200, 0],   # Coin 4
+    ]
+    z_bas = -2110
+
+    # Ajouter le plateau (rectangle rempli avec Mesh3d)
+    plateau_x = [coins[i][0] for i in [0, 1, 2, 3]]
+    plateau_y = [coins[i][1] for i in [0, 1, 2, 3]]
+    plateau_z = [coins[i][2] for i in [0, 1, 2, 3]]
+
+    fig.add_trace(go.Mesh3d(
+        x=plateau_x,
+        y=plateau_y,
+        z=plateau_z,
+        color='brown',
+        opacity=1,
+        i=[0, 1, 2, 3],  # Indices des sommets formant les faces
+        j=[1, 2, 3, 0],
+        k=[2, 3, 0, 1],
+        showlegend=False,
+    ))
+
+    # Ajouter les pieds (cylindres)
+    for coin in coins:
+        pied_x, pied_y, pied_z = generer_cylindre(coin, [coin[0], coin[1], z_bas], radius=5, resolution=10)
+        fig.add_trace(go.Mesh3d(
+            x=pied_x,
+            y=pied_y,
+            z=pied_z,
+            color='brown',
+            opacity=1,
+            alphahull=0,
+            showlegend=False,
+        ))
+
+    return fig
+
+
 def bras_rob_model3D_animation(A,B,V1,V2,K):
     """
     Anime un bras robotique suivant une trajectoire circulaire définie par deux points (A et B).
@@ -52,8 +95,9 @@ def bras_rob_model3D_animation(A,B,V1,V2,K):
     :param Liaisons: Dictionnaire contenant les dimensions des liaisons du bras.
     :param Robot_pos: Liste contenant deux points [A, B] qui définissent le cercle.
     """
-    q,qp, positions_cercle, dt = traj(A, B, V1,K, V2,Debug=False)
-    print(f"dt={dt}")
+    q,qp, positions_cercle, dt = traj(A, B, V1,V2, K,Debug=False)
+    # print(f"dt={dt}")
+    print("Générant la simulation...")
     # Initialiser les configurations du bras
     frames = []
 
@@ -125,7 +169,8 @@ def bras_rob_model3D_animation(A,B,V1,V2,K):
     step = max(1, len(frames) // max_frames)
     print(step)
     frames = frames[::step]
-    print(f"Frames après sous-échantillonnage : {len(frames)}")
+    # print(f"Frames après sous-échantillonnage : {len(frames)}")
+
 
     # Créer la figure initiale
     # Créer la figure initiale avec la première frame
@@ -133,6 +178,9 @@ def bras_rob_model3D_animation(A,B,V1,V2,K):
         data=frames[0].data,  # Utiliser directement les données de la première frame
         frames=frames
     )
+
+    fig = ajouter_table(fig)
+    frames.append(go.Frame(data=fig.data))
 
     # Configurer les boutons de lecture
     fig.update_layout(
@@ -156,18 +204,10 @@ def bras_rob_model3D_animation(A,B,V1,V2,K):
         scene=dict(
             xaxis=dict(title="Axe X", range=[-2110, 2110]),
             yaxis=dict(title="Axe Y", range=[-2110, 2110]),
-            zaxis=dict(title="Axe Z", range=[0, 2 * 2110])
+            zaxis=dict(title="Axe Z", range=[-2110, 2110])
         ),
         title="Animation 3D du Bras Robotique"
     )
 
     # Afficher la figure
     fig.show()
-"""
-V1 = 100 # Vitesse 1 (par exemple)
-V2 = 500  # Vitesse 2 (par exemple)
-
-A = np.array([0, 500, 1200])  # Ajusté pour respecter z_min
-B = np.array([0, 500, 1900])  # Ajusté pour respecter z_min
-
-bras_rob_model3D_animation(A, B, V1, V2)"""
