@@ -2,7 +2,7 @@
 
 ## Description
 
-Ce repository contient un modèle complet de robot RRR, incluant les paramètres de modélisation, les simulations et les tests associés. Il permet de réaliser des calculs de modélisation géométrique, cinématique et dynamique, ainsi que des simulations de trajectoires.
+Ce projet est un modèle complet de robot RRR, incluant les paramètres de modélisation, les simulations et les tests associés. Il permet de réaliser des calculs de modélisation géométrique et cinématique , ainsi que des simulations de trajectoires.
 
 ---
 
