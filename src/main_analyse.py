@@ -128,9 +128,8 @@ def main_analyse():
             print(dq_vert)
         else:
             pass
-
         print("\n")
     else:
         pass
-    
+
     main_analyse()
