@@ -74,7 +74,7 @@ git clone https://github.com/OlivierCrt/Engineering_Consultancy_Robotic_Modeling
 ```
 ### 2. Installer les dépendances
 ```bash
-pip install -r requirements.txt
+pip install -r required.txt
 ```
 ### 3. Exécuter le fichier principal
 ```bash
