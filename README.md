@@ -1,54 +1,97 @@
 # Circular Trajectory Generation with a Robot Manipulator - RX160
 
-## Project Objective
+## Description
 
-This project aims to develop a motion primitive for the RX160 robot manipulator, allowing its end effector to follow a circular trajectory at a defined speed. The main goal is to link the operational and generalized spaces and simulate the trajectory in terms of position, velocity, and acceleration.
+Ce repository contient un modèle complet de robot RRR, incluant les paramètres de modélisation, les simulations et les tests associés. Il permet de réaliser des calculs de modélisation géométrique, cinématique et dynamique, ainsi que des simulations de trajectoires.
 
-## Prerequisites
+---
 
-- Basic knowledge of robot modeling (direct and inverse kinematics)
-- Python with the following libraries installed:
-  - `numpy`
-  - `matplotlib`
-    
-## Project Structure
+## Structure des fichiers
 
-### 1. Geometric Modeling 
+### `const_v.py`
+- Contient les constantes définissant le robot RRR.
+- Paramètres de distances des axes et paramètres Denavit-Hartenberg (DHM).
 
-The robot used in this project is a simplified version of the Staubli RX160 (RX160R), with 3 degrees of freedom (3R). You need to:
+### `matrices_tn.py`
+- **`matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, Debug=False)`**  
+  Calcule la matrice de transformation DH entre deux liaisons successives.
 
-- Define the reference frames and DH parameters.
-- Calculate the Direct Geometric Model (DGM).
-- Implement a Python function to compute the DGM.
+- **`generate_transformation_matrices(q, dh, round_p=False, Debug=False)`**  
+  Génère une liste de matrices de transformation \( T(i, i+1) \) à partir des paramètres DH.
 
-### 2. Differential Modeling
+- **`matrice_Tn(dh, q, Debug=False)`**  
+  Calcule la matrice globale \( T0,n \) en utilisant les paramètres DH et les angles articulaires \( q \).
 
-- Calculate the geometric and analytical Jacobian matrices.
-- Implement a Python function for differential modeling calculations.
+- **`mgd(q, Liaisons, Debug=False)`**  
+  Résout la modélisation géométrique directe.
 
-### 3. Motion Generation
+- **`mgi(Xd, Liaisons, Debug=False)`**  
+  Résout la modélisation géométrique inverse.
 
-The project includes generating circular trajectories with a speed profile defined by the user. The trajectory is determined by two points (A and B), which represent the diameter of the circle.
+- **`xy_Ot(result_matrix)`**  
+  Extrait les coordonnées opérationnelles obtenues à partir de la matrice \( T0,n \).
 
-#### Steps:
-- Calculate the operational trajectories: coordinates, velocities, and accelerations based on the curvilinear abscissa `s`.
-- Compute time evolution laws to match the imposed speed profile.
-- Generate motion in the joint space using inverse models.
+---
 
-### 4. Simulation
+### `modele_differentiel.py`
+- Contient les fonctions liées au modèle différentiel du robot, notamment :
+  - Jacobiennes calculées géométriquement.
+  - Jacobiennes calculées analytiquement.
+  - Modèle Différentiel Direct (MDD).
+  - Modèle Différentiel Inverse (MDI).
 
-Trajectory simulation in the generalized space is carried out at each sampling instant with a time step `Te` (around 1 to 5 ms). This includes displaying trajectory curves, velocities, and accelerations in both operational and joint spaces.
+---
 
-## Key Features
+### `trajectory_generation.py`
+- **`traj(A, B, V1, V2, K, Debug=False)`**  
+  Génère une trajectoire circulaire dans l’espace \( \mathbb{R}^3 \) entre deux points \( A \) et \( B \).  
+  **Arguments :**
+  - `A`, `B` : Points de départ et d'arrivée \([x, y, z]\).
+  - `V1`, `V2` : Vitesses initiale et finale (mm/s).
+  - `K` : Accélération.
+  - `Debug` : Affiche les détails pour le débogage.  
+  **Retourne :**
+  - Trajectoires articulaires, vitesses et positions opérationnelles.
 
-- **Geometric modeling calculations**: Implement DGM and inverse geometric models.
-- **Differential calculations**: Use Jacobian matrices to link the joint and operational spaces.
-- **Circular trajectory generation**: Simulate imposed trajectories with customizable speed profiles.
-- **Full simulation**: Visualize trajectories and validate the program with tests on different scenarios.
+---
 
-## Usage
+### `main.py`
+- Fichier principal à exécuter.
+- Permet aux utilisateurs de tester et utiliser toutes les fonctionnalités via des interactions guidées.
 
-1. Clone this project:
-   ```bash
-   git clone https://github.com/OlivierCrt/Engineering_Consultancy_Robotic_Modeling/tree/main
+---
 
+### Tests et simulations
+- Les fichiers annexes contiennent les simulations et tests nécessaires pour valider le modèle et les fonctions.
+
+---
+
+## Utilisation
+
+### 1. Cloner le repository
+```bash
+git clone https://github.com/OlivierCrt/Engineering_Consultancy_Robotic_Modeling
+```
+### 2. Installer les dépendances
+```bash
+pip install -r requirements.txt
+```
+### 3. Exécuter le fichier principal
+```bash
+python Test/main.py
+```
+Si une erreur de module non reconnu intervient :
+Solution 1 :
+```bash
+python -m Tests.main.py
+```
+Solution 2 :
+Ajouter le dossier principal à vos variables d’environnement (dépendant de votre OS).
+
+
+###Entrées attendues
+Unités :
+Vitesses linéaires : mm/s
+Vitesses angulaires : rad/s
+Vitesses articulaires : rad/s
+Distances : mm
