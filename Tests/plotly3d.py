@@ -97,7 +97,7 @@ def bras_rob_model3D_animation(A,B,V1,V2,K):
     """
     q,qp, positions_cercle, dt = traj(A, B, V1,V2, K,Debug=False)
     # print(f"dt={dt}")
-    print("Générant la simulation...")
+    print("Génération de la simulation...")
     # Initialiser les configurations du bras
     frames = []
 
