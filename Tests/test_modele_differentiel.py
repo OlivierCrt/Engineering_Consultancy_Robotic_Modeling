@@ -31,8 +31,7 @@ def test_Jacob_geo():
 
 def test_Jacob_analytique():
     print("Test : Jacob_analytique")
-    matrices_sym = Mat_T_analytiques()
-    J = Jacob_analytique(matrices_sym)
+    J = Jacob_analytique()
     assert J.shape == (6, len(q_test)), "La Jacobienne analytique n'est pas de taille 6x3"
     print("Jacobienne analytique calculée :\n", J)
     print("Résultat : OK\n")
@@ -62,17 +61,7 @@ def test_jacobienne_geo_vs_analytique():
 
     # Calcul des Jacobiennes
     J_geo = Jacob_geo(matrices)
-    J_analytique_sym = Jacob_analytique(Mat_T_analytiques())
-
-    # Substitution des valeurs numériques dans la Jacobienne analytique
-    c1, s1, c2, s2, c3, s3 = sp.symbols('c1 s1 c2 s2 c3 s3')
-    subs = {
-        c1: np.cos(q_test[0]), s1: np.sin(q_test[0]),
-        c2: np.cos(q_test[1]), s2: np.sin(q_test[1]),
-        c3: np.cos(q_test[2]), s3: np.sin(q_test[2])
-    }
-
-    J_analytique_num = np.array(J_analytique_sym.subs(subs)).astype(np.float64)
+    J_analytique_num = Jacob_analytique(q_test)
 
     # Comparaison entre Jacobienne géométrique et analytique numérique
     print("Jacobienne géométrique (numérique) :\n", J_geo)

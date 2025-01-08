@@ -53,10 +53,21 @@ def Jacob_geo(matrices, Debug=False):
     return J
 
 
-def Mat_T_analytiques():
+def Jacob_analytique(q=None, Debug=False):
     """
-    Define las matrices simbólicas con placeholders para cosenos y senos.
+    Calcule la Jacobienne analytique en mode débogage.
+    - Si `q` est fourni, la Jacobienne est calculée numériquement.
+    - Affiche toujours la Jacobienne symbolique avec les ci et si.
+
+    Paramètres :
+        M (list): Liste des matrices de transformation analytiques.
+        q (list ou None): Liste des valeurs numériques des angles [q1, q2, q3] (en radians).
+
+    Retour :
+        np.ndarray : Jacobienne calculée numériquement si `q` est fourni.
+        sp.Matrix : Jacobienne symbolique si `q` n'est pas fourni.
     """
+    # Définition des symboles pour c_i et s_i
     c1, s1, c2, s2, c3, s3, c4, s4 = sp.symbols('c1 s1 c2 s2 c3 s3 c4 s4')
 
     T01 = sp.Matrix([
@@ -86,29 +97,6 @@ def Mat_T_analytiques():
         [0, 0, 1, 0],
         [0, 0, 0, 1]
     ])
-
-    return T01, T12, T23, T34
-
-
-def Jacob_analytique(M, q=None, Debug=False):
-    """
-    Calcule la Jacobienne analytique en mode débogage.
-    - Si `q` est fourni, la Jacobienne est calculée numériquement.
-    - Affiche toujours la Jacobienne symbolique avec les ci et si.
-
-    Paramètres :
-        M (list): Liste des matrices de transformation analytiques.
-        q (list ou None): Liste des valeurs numériques des angles [q1, q2, q3] (en radians).
-
-    Retour :
-        np.ndarray : Jacobienne calculée numériquement si `q` est fourni.
-        sp.Matrix : Jacobienne symbolique si `q` n'est pas fourni.
-    """
-    # Définition des symboles pour c_i et s_i
-    c1, s1, c2, s2, c3, s3 = sp.symbols('c1 s1 c2 s2 c3 s3')
-
-    # Extraire les matrices analytiques
-    T01, T12, T23, T34 = M
 
     # Calcul des matrices cumulées
     T_01 = T01
