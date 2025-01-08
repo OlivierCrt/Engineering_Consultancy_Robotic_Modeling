@@ -98,10 +98,14 @@ def bras_rob_model3D_animation(A,B,V1,V2,K):
     q,qp, positions_cercle, dt = traj(A, B, V1,V2, K,Debug=False)
     # print(f"dt={dt}")
     print("Génération de la simulation...")
+
+    max_frames = 60  # Limiter le nombre de frames pour faciliter l'exécution
+    step = max(1, len(q) // max_frames)  # Calculer le pas de sous-échantillonnage
+
     # Initialiser les configurations du bras
     frames = []
 
-    for i in range(len(q)-1):
+    for i in range(0, len(q), step):
 
         q1, q2, q3 = q[i]  # Prendre la première solution
 
@@ -163,13 +167,6 @@ def bras_rob_model3D_animation(A,B,V1,V2,K):
                 showlegend=False
             )
         ]+ cylinders))
-
-    # Sous-échantillonnage des frames
-    max_frames= 60 # limiter le nb de frames pour faciliter l'execution
-    step = max(1, len(frames) // max_frames)
-    print(step)
-    frames = frames[::step]
-    # print(f"Frames après sous-échantillonnage : {len(frames)}")
 
 
     # Créer la figure initiale
