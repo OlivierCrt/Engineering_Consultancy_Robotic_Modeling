@@ -1,7 +1,4 @@
-import numpy as np
 import plotly.graph_objects as go
-from src.const_v import *  
-from src.matrice_tn import * 
 from src.const_v import *
 from src.trajectory_generation import traj
 

@@ -1,6 +1,4 @@
 import numpy as np
-from src.Robot_repr import bras_rob_model3D
-import matplotlib.pyplot as plt
 
 
 def matrice_Tim1_Ti(qi, ai_m1, alphai_m1, ri, Debug=False):

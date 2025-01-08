@@ -1,5 +1,5 @@
-from src.main_analyse import main_analyse
-from plotly3d import *
+from main_analyse import main_analyse
+from Tests.plotly3d import *
 
 
 def menu():

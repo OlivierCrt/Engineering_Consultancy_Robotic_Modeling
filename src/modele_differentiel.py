@@ -1,6 +1,5 @@
 import numpy as np
 import sympy as sp
-import time
 
 
 def calculate_z_and_o(T):

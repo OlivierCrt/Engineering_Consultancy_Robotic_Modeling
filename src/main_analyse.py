@@ -1,6 +1,6 @@
-from src.trajectory_generation import *
-from src.modele_differentiel import *
-from src.Robot_repr import bras_rob_model3D
+from trajectory_generation import *
+from modele_differentiel import *
+from Robot_repr import bras_rob_model3D
 
 
 # Afficher chaque matrice de transformation pour suivre le calcul et enregistrer dans une liste les matrices
