@@ -70,7 +70,7 @@ Ce projet est un modèle complet de robot RRR, incluant les paramètres de modé
 
 ### 1. Cloner le repository
 ```bash
-git clone https://github.com/OlivierCrt/Engineering_Consultancy_Robotic_Modeling
+git clone https://github.com/OlivierCrt/Trajectory_Generation_Robot_Manipulator_RX160
 ```
 ### 2. Installer les dépendances
 ```bash
