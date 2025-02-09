@@ -56,7 +56,3 @@ This project focuses on modeling and simulating a 3-DOF RRR robot manipulator, s
    - **Angular Velocities:** rad/s  
    - **Joint Velocities:** rad/s  
    - **Distances:** mm  
-
----
-
-This project provides a comprehensive framework for modeling, simulating, and controlling an RRR robot manipulator, with a focus on circular trajectory generation and execution.
