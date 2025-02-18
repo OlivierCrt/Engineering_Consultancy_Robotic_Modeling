@@ -61,6 +61,4 @@ This project focuses on modeling and simulating a 3-DOF RRR robot manipulator, s
 
 This project provides a comprehensive framework for modeling, simulating, and controlling an RRR robot manipulator, with a focus on circular trajectory generation and execution.
 
-rajoute a usage que les constantes dans le fichier const.py sont modifiable afin de s'adapter a n importe quel robot rrr
-markdown
-Copy
+
