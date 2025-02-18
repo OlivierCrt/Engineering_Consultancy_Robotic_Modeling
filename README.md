@@ -30,6 +30,9 @@ This project focuses on modeling and simulating a 3-DOF RRR robot manipulator, s
 
 ## Usage  
 
+> **Note:** The parameters of the RRR robot can be edited in the file **config.py** to adapt to any configuration.
+
+
 ### 1. **Setup**  
    - Clone the repository:  
      ```bash  
@@ -61,5 +64,4 @@ This project focuses on modeling and simulating a 3-DOF RRR robot manipulator, s
 
 This project provides a comprehensive framework for modeling, simulating, and controlling an RRR robot manipulator, with a focus on circular trajectory generation and execution.
 
-> **Note:** The parameters of the RRR robot can be edited in the file **config.py** to adapt to any configuration.
 
